@@ -2,7 +2,9 @@ services:
   java_app:
     container_name: java_app
     image: yh13431/java_app:1.0.0
-    build: .
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     environment:
@@ -25,6 +27,15 @@ services:
     env_file: ".env"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  js_frontend:
+    container_name: js_frontend
+    image: yh13431/js_frontend:1.0.0
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
 
 volumes:
   pgdata: {}
