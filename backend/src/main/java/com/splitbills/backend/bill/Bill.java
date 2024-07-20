@@ -46,7 +46,7 @@ public class Bill {
   }
 
   public Long getQuantity() {
-    return price;
+    return quantity;
   }
 
   public void setQuantity(Long quantity) {
