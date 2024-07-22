@@ -17,7 +17,8 @@ services:
 
   java_db:
     container_name: java_db
-    image: postgres:12
+    image: postgres
+    restart: always
     ports:
       - 5432:5432
     environment:
