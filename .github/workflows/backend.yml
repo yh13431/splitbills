@@ -13,16 +13,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,11 +23,12 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
+      - name: Build Docker image
+        run: |
+          docker build -t yh13431/java_app:1.0.0 ./backend
+
       - name: Docker login
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u yh13431 --password-stdin
-
-      - name: Build Docker image
-        run: docker build -t yh13431/java_app:1.0.0 ./backend
 
       - name: Push Docker image
         run: docker push yh13431/java_app:1.0.0
