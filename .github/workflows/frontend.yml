@@ -36,4 +36,5 @@ jobs:
         with:
           deploy-hook: ${{ secrets.RENDER_DEPLOY_HOOK }}
           image-url: yh13431/js_frontend:latest
+          render-api-key: ${{ secrets.RENDER_API_KEY }}
           wait-for-deployment: true
