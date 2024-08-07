@@ -24,7 +24,7 @@ jobs:
           java-version: '17'
 
       - name: Build backend JAR
-        run: ./backend/mvnw clean package -DskipTests
+        run: ./mvnw clean package -DskipTests
         working-directory: ./backend
 
       - name: List files in the backend target directory
