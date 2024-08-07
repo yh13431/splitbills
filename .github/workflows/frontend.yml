@@ -32,7 +32,6 @@ jobs:
           tags: yh13431/js_frontend:latest
 
       - name: Deploy to Render
-        if: ${{ github.ref_name == 'main' }}
         uses: gh-actions-workflows/deploy-docker-render@v1.1
         with:
           deploy-hook: ${{ secrets.RENDER_DEPLOY_HOOK }}
