@@ -47,4 +47,4 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: user/app:latest
+          tags: yh13431/java_app:latest
