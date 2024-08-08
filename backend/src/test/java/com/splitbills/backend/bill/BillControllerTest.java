@@ -1,6 +1,10 @@
 package com.splitbills.backend.bill;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.splitbills.backend.controller.BillController;
+import com.splitbills.backend.model.Bill;
+import com.splitbills.backend.service.BillService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

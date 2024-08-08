@@ -1,7 +1,10 @@
-package com.splitbills.backend.bill;
+package com.splitbills.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.splitbills.backend.model.Bill;
+import com.splitbills.backend.repository.BillRepository;
 
 import java.util.List;
 import java.util.Optional;

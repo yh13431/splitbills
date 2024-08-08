@@ -1,7 +1,10 @@
-package com.splitbills.backend.bill;
+package com.splitbills.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import com.splitbills.backend.model.Bill;
+import com.splitbills.backend.service.BillService;
 
 import java.util.List;
 
