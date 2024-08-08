@@ -27,6 +27,19 @@ jobs:
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
 
+      - name: Make mvnw executable
+        run: chmod +x ./backend/mvnw
+  
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build backend JAR
+        run: ./mvnw clean package -DskipTests
+        working-directory: ./backend
+
       - name: Build backend Docker image
         run: |
           docker-compose build java_app
