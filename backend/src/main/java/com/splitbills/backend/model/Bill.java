@@ -1,4 +1,4 @@
-package com.splitbills.backend.bill;
+package com.splitbills.backend.model;
 
 import jakarta.persistence.*;
 

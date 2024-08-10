@@ -19,6 +19,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.splitbills.backend.model.Bill;
+import com.splitbills.backend.repository.BillRepository;
+import com.splitbills.backend.service.BillService;
+
 @SpringBootTest
 class BillServiceTest {
 
