@@ -6,14 +6,13 @@ import com.splitbills.backend.model.User;
 import com.splitbills.backend.response.LoginResponse;
 import com.splitbills.backend.service.AuthenticationService;
 import com.splitbills.backend.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/auth")
 @RestController
+@CrossOrigin("http://localhost:3000")
 public class AuthenticationController {
     private final JwtService jwtService;
 
@@ -37,12 +36,19 @@ public class AuthenticationController {
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
         long expiresIn = jwtService.getExpirationTime();
+        int userId = authenticatedUser.getId();
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setToken(jwtToken);
         loginResponse.setExpiresIn(expiresIn);
+        loginResponse.setUserId(userId);
 
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        return ResponseEntity.ok().header("Authorization", "").build();
     }
 
 }
