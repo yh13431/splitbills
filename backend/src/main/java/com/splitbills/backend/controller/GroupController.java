@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.splitbills.backend.dto.GroupDto;
 import com.splitbills.backend.model.Group;
 import com.splitbills.backend.service.GroupService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -18,23 +20,30 @@ public class GroupController {
     private GroupService groupService;
 
     @GetMapping
-    public List<Group> getAllGroups() {
-        return groupService.getAllGroups();
+    public List<GroupDto> getAllGroups() {
+        List<Group> groups = groupService.getAllGroups();
+        return groups.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Group getGroupById(@PathVariable Long id) {
-        return groupService.getGroupById(id).orElseThrow(() -> new RuntimeException("Group not found"));
+    public GroupDto getGroupById(@PathVariable Long id) {
+        Group group = groupService.getGroupById(id).orElseThrow(() -> new RuntimeException("Group not found"));
+        return convertToDto(group);
     }
 
     @PostMapping
-    public Group createGroup(@RequestBody Group group) {
-        return groupService.createGroup(group);
+    public GroupDto createGroup(@RequestBody GroupDto groupDto) {
+        Group group = convertToEntity(groupDto);
+        Group createdGroup = groupService.createGroup(group);
+        return convertToDto(createdGroup);
     }
 
     @PutMapping("/{id}")
-    public Group updateGroup(@PathVariable Long id, @RequestBody Group group) {
-        return groupService.updateGroup(id, group);
+    public GroupDto updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
+        Group group = convertToEntity(groupDto);
+        group.setId(id);
+        Group updatedGroup = groupService.updateGroup(id, group);
+        return convertToDto(updatedGroup);
     }
 
     @DeleteMapping("/{id}")
@@ -48,22 +57,37 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/users/{userId}")
-    public ResponseEntity<Group> addUserToGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
+    public ResponseEntity<GroupDto> addUserToGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
         try {
             Group updatedGroup = groupService.addUserToGroup(groupId, userId);
-            return ResponseEntity.ok(updatedGroup);
+            return ResponseEntity.ok(convertToDto(updatedGroup));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(null);
         }
     }
 
     @DeleteMapping("/{groupId}/users/{userId}")
-    public ResponseEntity<Group> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
+    public ResponseEntity<GroupDto> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
         try {
             Group updatedGroup = groupService.removeUserFromGroup(groupId, userId);
-            return ResponseEntity.ok(updatedGroup);
+            return ResponseEntity.ok(convertToDto(updatedGroup));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(null);
         }
+    }
+
+    private GroupDto convertToDto(Group group) {
+        GroupDto dto = new GroupDto();
+        dto.setId(group.getId());
+        dto.setName(group.getName());
+        dto.setUsers(group.getUsers().stream().map(user -> user.getId().longValue()).collect(Collectors.toSet()));
+        return dto;
+    }
+
+    private Group convertToEntity(GroupDto dto) {
+        Group group = new Group();
+        group.setId(dto.getId());
+        group.setName(dto.getName());
+        return group;
     }
 }
