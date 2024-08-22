@@ -1,27 +1,11 @@
-package com.splitbills.backend.model;
+package com.splitbills.backend.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "bills")
-public class Bill {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class BillDto {
     private Long id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "price")
     private Double price;
-
-    @Column(name = "quantity")
     private Double quantity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+    private Long groupId;
 
     public Long getId() {
         return id;
@@ -54,12 +38,12 @@ public class Bill {
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
-
-    public Group getGroup() {
-        return group;
+    
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 }

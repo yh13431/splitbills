@@ -28,6 +28,9 @@ public class Group {
   )
   private Set<User> users = new HashSet<>();
 
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Bill> bills = new HashSet<>();
+
   // Getters and setters
 
   public Long getId() {
@@ -52,5 +55,13 @@ public class Group {
 
   public void setUsers(Set<User> users) {
     this.users = users;
+  }
+
+  public Set<Bill> getBills() {
+    return bills;
+  }
+
+  public void setBills(Set<Bill> bills) {
+      this.bills = bills;
   }
 }

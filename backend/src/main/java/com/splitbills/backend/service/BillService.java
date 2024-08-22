@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.splitbills.backend.model.Bill;
 import com.splitbills.backend.repository.BillRepository;
+import com.splitbills.backend.model.Group;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,12 +16,16 @@ public class BillService {
     @Autowired
     private BillRepository billRepository;
 
-    public List<Bill> getAllBills() {
-        return billRepository.findAll();
-    }
-
     public Optional<Bill> getBillById(Long id) {
         return billRepository.findById(id);
+    }
+
+    public List<Bill> getBillsByGroup(Group group) {
+        return billRepository.findByGroup(group);
+    }
+
+    public Optional<Bill> getBillByIdAndGroup(Long id, Group group) {
+        return billRepository.findByIdAndGroup(id, group);
     }
 
     public Bill createBill(Bill bill) {
