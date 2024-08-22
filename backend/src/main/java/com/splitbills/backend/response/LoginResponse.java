@@ -5,7 +5,7 @@ public class LoginResponse {
 
     private long expiresIn;
 
-    private Integer userId;
+    private Long userId;
 
     public String getToken() {
         return token;
@@ -23,11 +23,11 @@ public class LoginResponse {
         this.expiresIn = expiresIn;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

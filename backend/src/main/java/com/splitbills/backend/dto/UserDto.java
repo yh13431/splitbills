@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 public class UserDto {
-    private Integer id;
+    private Long id;
     private String username;
     private String email;
     private String password;
@@ -12,11 +12,11 @@ public class UserDto {
     private Date updatedAt;
     private Set<Long> groups;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -20,7 +20,7 @@ public class Group {
   @Column(name = "name")
   private String name;
 
-  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinTable(
       name = "groups_users",
       joinColumns = @JoinColumn(name = "group_id"),
@@ -28,10 +28,8 @@ public class Group {
   )
   private Set<User> users = new HashSet<>();
 
-  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private Set<Bill> bills = new HashSet<>();
-
-  // Getters and setters
 
   public Long getId() {
     return id;

@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.splitbills.backend.dto.GroupDto;
+import com.splitbills.backend.model.Bill;
 import com.splitbills.backend.model.Group;
+import com.splitbills.backend.model.User;
 import com.splitbills.backend.service.GroupService;
 
 import java.util.List;
@@ -57,7 +59,7 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/users/{userId}")
-    public ResponseEntity<GroupDto> addUserToGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
+    public ResponseEntity<GroupDto> addUserToGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         try {
             Group updatedGroup = groupService.addUserToGroup(groupId, userId);
             return ResponseEntity.ok(convertToDto(updatedGroup));
@@ -67,7 +69,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{groupId}/users/{userId}")
-    public ResponseEntity<GroupDto> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Integer userId) {
+    public ResponseEntity<GroupDto> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         try {
             Group updatedGroup = groupService.removeUserFromGroup(groupId, userId);
             return ResponseEntity.ok(convertToDto(updatedGroup));
@@ -80,7 +82,8 @@ public class GroupController {
         GroupDto dto = new GroupDto();
         dto.setId(group.getId());
         dto.setName(group.getName());
-        dto.setUsers(group.getUsers().stream().map(user -> user.getId().longValue()).collect(Collectors.toSet()));
+        dto.setUsers(group.getUsers().stream().map(User::getId).collect(Collectors.toSet()));
+        dto.setBills(group.getBills().stream().map(Bill::getId).collect(Collectors.toSet()));        
         return dto;
     }
 

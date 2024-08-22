@@ -29,7 +29,7 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<UserDto>> allUsers() {
         List<User> users = userService.allUsers();
         List<UserDto> userDtos = users.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -37,14 +37,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findUser(@PathVariable Integer id) {
+    public ResponseEntity<UserDto> findUser(@PathVariable Long id) {
         User user = userService.findUser(id);
         UserDto userDto = convertToDto(user);
         return ResponseEntity.ok(userDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Integer id, @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         User user = convertToEntity(userDto);
         User updatedUser = userService.updateUser(id, user);
         UserDto updatedUserDto = convertToDto(updatedUser);
@@ -52,13 +52,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{userId}/groups/{groupId}")
-    public ResponseEntity<UserDto> addUserToGroup(@PathVariable Integer userId, @PathVariable Long groupId) {
+    public ResponseEntity<UserDto> addUserToGroup(@PathVariable Long userId, @PathVariable Long groupId) {
         try {
             User updatedUser = userService.addUserToGroup(userId, groupId);
             UserDto updatedUserDto = convertToDto(updatedUser);
@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/groups/{groupId}")
-    public ResponseEntity<UserDto> removeUserFromGroup(@PathVariable Integer userId, @PathVariable Long groupId) {
+    public ResponseEntity<UserDto> removeUserFromGroup(@PathVariable Long userId, @PathVariable Long groupId) {
         try {
             User updatedUser = userService.removeUserFromGroup(userId, groupId);
             UserDto updatedUserDto = convertToDto(updatedUser);

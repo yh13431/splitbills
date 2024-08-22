@@ -27,12 +27,12 @@ public class UserService {
         return users;
     }
 
-    public User findUser(Integer id) {
+    public User findUser(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 
-    public User updateUser(Integer id, User user) {
+    public User updateUser(Long id, User user) {
         if (userRepository.existsById(id)) {
             user.setId(id);
             return userRepository.save(user);
@@ -41,13 +41,13 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Integer id) {
+    public void deleteUser(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         userRepository.delete(user);
     }
 
-    public User addUserToGroup(Integer userId, Long groupId) {
+    public User addUserToGroup(Long userId, Long groupId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
         Group group = groupRepository.findById(groupId)
@@ -57,7 +57,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User removeUserFromGroup(Integer userId, Long groupId) {
+    public User removeUserFromGroup(Long userId, Long groupId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
         Group group = groupRepository.findById(groupId)

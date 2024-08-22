@@ -24,7 +24,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
     private String username;
@@ -43,7 +43,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Group> groups = new HashSet<>();
 
     @Override
@@ -77,11 +77,11 @@ public class User implements UserDetails {
     }
 
     // Getters and setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -49,19 +49,26 @@ public class GroupService {
         }
     }
 
-    public Group addUserToGroup(Long groupId, Integer userId) {
+    public Group addUserToGroup(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
+    
         group.getUsers().add(user);
+        user.getGroups().add(group); 
+        userRepository.save(user); 
+    
         return groupRepository.save(group);
     }
-
-    public Group removeUserFromGroup(Long groupId, Integer userId) {
+    
+    public Group removeUserFromGroup(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
+    
         group.getUsers().remove(user);
+        user.getGroups().remove(group);
+        userRepository.save(user);
+    
         return groupRepository.save(group);
     }
+    
 }

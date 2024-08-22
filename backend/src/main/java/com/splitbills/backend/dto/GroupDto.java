@@ -5,8 +5,8 @@ import java.util.Set;
 public class GroupDto {
     private Long id;
     private String name;
-    private Set<Long> users;
-    private Set<Long> bills;
+    private Set<Long> userIds;
+    private Set<Long> billIds;
 
     public Long getId() {
         return id;
@@ -25,18 +25,18 @@ public class GroupDto {
     }
 
     public Set<Long> getUsers() {
-        return users;
+        return userIds;
     }
 
-    public void setUsers(Set<Long> users) {
-        this.users = users;
+    public void setUsers(Set<Long> userIds) {
+        this.userIds = userIds;
     }
 
     public Set<Long> getBills() {
-        return bills;
+        return billIds;
     }
 
-    public void setBills(Set<Long> bills) {
-        this.bills = bills;
+    public void setBills(Set<Long> billIds) {
+        this.billIds = billIds;
     }
 }
