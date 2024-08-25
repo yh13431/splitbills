@@ -3,83 +3,83 @@ import { Link } from 'react-router-dom';
 import { Container, Typography, Button, Card, CardContent, Box, TextField } from '@mui/material';
 
 export default function Home() {
-  const [bills, setBills] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('')
 
-  const fetchBills = async () => {
+  const getAuthToken = () => {
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    return authData ? authData.token : '';
+  };
+
+  const fetchGroups = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/bills`, {
+      const response = await fetch(`http://localhost:8080/api/groups`, {
         method: 'GET',
-        headers: {},
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch bills');
+        throw new Error('Failed to fetch groups');
       }
       const data = await response.json();
-      setBills(data);
+      setGroups(data);
     } catch (error) {
-      console.error('Error fetching bills:', error.message);
+      console.error('Error fetching groups:', error.message);
     }
   };
 
-  const updateBill = async (billId) => {
+  const updateGroup = async (groupId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/bills/${billId}`, {
+      const response = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
         },
-        body: JSON.stringify({ name, price, quantity })
+        body: JSON.stringify({ name })
       });
       if (!response.ok) {
-        throw new Error('Failed to update bill');
+        throw new Error('Failed to update group');
       }
       setEditMode(null);
-      fetchBills();
+      fetchGroups();
     } catch (error) {
-      console.error('Error updating bill:', error.message);
+      console.error('Error updating group:', error.message);
     }
   };
 
-  const deleteBill = async (billId) => {
+  const deleteGroup = async (groupId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/bills/${billId}`, {
+      const response = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
         method: 'DELETE',
-        headers: {},
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
       });
       if (!response.ok) {
-        throw new Error('Failed to delete bill');
+        throw new Error('Failed to delete group');
       }
-      fetchBills();
+      fetchGroups();
     } catch (error) {
-      console.error('Error deleting bill:', error.message);
+      console.error('Error deleting group:', error.message);
     }
   };
 
   useEffect(() => {
-    fetchBills();
+    fetchGroups();
   }, []);
 
   return (
     <Container>
-      <Box style={{ marginTop: '10px' }}>
-        <Typography variant="h4" gutterBottom>
-          Bills
-        </Typography>
-      </Box>
-      <Button variant="contained" color="primary" component={Link} to="/create-bill">
-        Create New Bill
-      </Button>
-      {Object.keys(bills).length === 0 ? (
-        <Typography variant="body1">No bills available</Typography>
+      {Object.keys(groups).length === 0 ? (
+        <Typography variant="body1">No groups available</Typography>
       ) : (
-        Object.values(bills).map((bill) => (
-          <Card key={bill.id} style={{ marginTop: '20px' }}>
+        Object.values(groups).map((group) => (
+          <Card key={group.id} style={{ marginTop: '20px' }}>
             <CardContent>
-              {editMode === bill.id ? (
+              {editMode === group.id ? (
                 <Box>
                   <TextField
                     label="Name"
@@ -88,24 +88,10 @@ export default function Home() {
                     fullWidth
                     margin="normal"
                   />
-                  <TextField
-                    label="Price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
-                  <TextField
-                    label="Quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => updateBill(bill.id)}
+                    onClick={() => updateGroup(group.id)}
                     style={{ marginTop: '20px', marginRight: '10px' }}
                   >
                     Save Changes
@@ -121,29 +107,25 @@ export default function Home() {
                 </Box>
               ) : (
                 <>
-                  <Typography variant="h6">{bill.name}</Typography>
-                  <Typography variant="body2">Price: {bill.price}</Typography>
-                  <Typography variant="body2">Quantity: {bill.quantity}</Typography>
+                  <Typography variant="h6">{group.name}</Typography>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      setEditMode(bill.id);
-                      setName(bill.name);
-                      setPrice(bill.price);
-                      setQuantity(bill.quantity);
+                      setEditMode(group.id);
+                      setName(group.name);
                     }}
                     style={{ marginTop: '20px', marginRight: '10px' }}
                   >
-                    Edit Bill
+                    Edit Group
                   </Button>
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => deleteBill(bill.id)}
+                    onClick={() => deleteGroup(group.id)}
                     style={{ marginTop: '20px' }}
                   >
-                    Delete Bill
+                    Delete Group
                   </Button>
                 </>
               )}

@@ -16,7 +16,13 @@ const Login = () => {
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                await axios.post("http://localhost:8080/auth/login", values);
+                const response = await axios.post("http://localhost:8080/auth/login", values);
+                const payload = {
+                    token: response.data.token,   
+                    user: response.data.userId      
+                };
+                localStorage.setItem('authData', JSON.stringify(payload));
+
                 navigate("/");
             } catch (err) {
                 let errorMessage = "An unexpected error occurred";
@@ -30,7 +36,7 @@ const Login = () => {
                         errorMessage = errorData.message || errorData.detail || errorMessage;
                     }
                 }
-                setSnackbar({ open: true, message: "User does not exist!", severity: 'error' });
+                setSnackbar({ open: true, message: errorMessage, severity: 'error' });
             } finally {
                 setSubmitting(false);
             }
