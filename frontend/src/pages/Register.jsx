@@ -18,25 +18,17 @@ const Register = () => {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 await axios.post("http://localhost:8080/auth/signup", values);
+                localStorage.setItem('username', values.username);
                 navigate("/");
             } catch (err) {
                 let errorMessage = "An unexpected error occurred";
-                
                 if (err.response && err.response.data) {
                     const errorData = err.response.data;
-                    
-                    if (typeof errorData === 'string') {
-                        if (errorData.includes("duplicate key value violates unique constraint")) {
-                            errorMessage = "This email is already registered.";
-                        } else {
-                            errorMessage = errorData;
-                        }
-                    } else if (typeof errorData === 'object') {
-                        errorMessage = errorData.message || errorData.detail || errorMessage;
-                    }
+                    errorMessage = typeof errorData === 'string'
+                        ? errorData
+                        : errorData.message || errorData.detail || errorMessage;
                 }
-
-                setSnackbar({ open: true, message: "User already exists!", severity: 'error' });
+                setSnackbar({ open: true, message: errorMessage, severity: 'error' });
             } finally {
                 setSubmitting(false);
             }

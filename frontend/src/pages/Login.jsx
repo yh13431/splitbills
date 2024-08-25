@@ -11,17 +11,12 @@ const Login = () => {
 
     const formik = useFormik({
         initialValues: {
-            email: "",
+            username: "",
             password: ""
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                const response = await axios.post("http://localhost:8080/auth/login", values);
-                const { token, userId } = response.data;
-                localStorage.setItem('token', token);
-                localStorage.setItem('userId', userId);
-                const decodedToken = JSON.parse(atob(token.split('.')[1]));
-                localStorage.setItem('username', decodedToken.sub);
+                await axios.post("http://localhost:8080/auth/login", values);
                 navigate("/");
             } catch (err) {
                 let errorMessage = "An unexpected error occurred";
@@ -61,9 +56,9 @@ const Login = () => {
                                 fullWidth
                                 required
                                 type="text"
-                                label="Email"
-                                name="email"
-                                value={formik.values.email}
+                                label="Username"
+                                name="username"
+                                value={formik.values.username}
                                 onChange={formik.handleChange}
                                 variant="outlined"
                             />

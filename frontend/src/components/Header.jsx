@@ -5,18 +5,6 @@ import { Link } from 'react-router-dom';
 const Header = () => {
   const [username, setUsername] = useState(() => localStorage.getItem('username'));
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setUsername(localStorage.getItem('username'));
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
   return (
     <AppBar position="static">
       <Toolbar>
@@ -28,12 +16,11 @@ const Header = () => {
         {username ? (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1" sx={{ marginRight: 2 }}>
-              Welcome, {username}
+              {username}
             </Typography>
             <Button color="inherit" onClick={() => {
               localStorage.removeItem('token');
               localStorage.removeItem('username');
-              window.location.reload();
             }}>
               Log Out
             </Button>
