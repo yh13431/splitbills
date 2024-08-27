@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Typography, Box } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Container, Typography, Box, Button } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 export default function ViewGroup() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [groupName, setGroupName] = useState('');
   const [bills, setBills] = useState([]);
   const [users, setUsers] = useState({});
@@ -92,25 +93,33 @@ export default function ViewGroup() {
     fetchBills();
   }, [id]);
 
+  const handleAddBillClick = () => {
+    navigate(`/add-bills/${id}`);
+  };
+
   return (
     <Container>
-      {bills.length > 0 ? (
-        <Box style={{ marginTop: '20px' }}>
-          <Typography variant="h4">{groupName}</Typography>
-          <Typography variant="h6">Bills: {bills.length}</Typography>
-          <Box style={{ height: '400px', marginTop: '20px' }}>
-            <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
-              <AgGridReact
-                rowData={bills}
-                columnDefs={columnDefs}
-                pagination={true}
-              />
-            </div>
-          </Box>
+      <Box style={{ marginTop: '20px' }}>
+        <Typography variant="h4">{groupName}</Typography>
+        <Typography variant="h6">Bills: {bills.length}</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddBillClick}
+          style={{ marginBottom: '20px' }}
+        >
+          Add Bill
+        </Button>
+        <Box style={{ height: '400px' }}>
+          <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
+            <AgGridReact
+              rowData={bills}
+              columnDefs={columnDefs}
+              pagination={true}
+            />
+          </div>
         </Box>
-      ) : (
-        <Typography variant="body1">Loading group details...</Typography>
-      )}
+      </Box>
     </Container>
   );
 }
