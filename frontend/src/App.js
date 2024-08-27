@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AddBills from "./pages/AddBills";
 import AddUsers from "./pages/AddUsers";
+import ViewGroup from "./pages/ViewGroup";
 
 const queryClient = new QueryClient()
 
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "/add-bills/:id",
         element: <AddBills />
+      },
+      {
+        path: "/view-group/:id",
+        element: <ViewGroup />
       },
       {
         path: "/register",

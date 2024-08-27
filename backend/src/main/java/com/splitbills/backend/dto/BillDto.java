@@ -6,6 +6,7 @@ public class BillDto {
     private Double price;
     private Double quantity;
     private Long groupId;
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -45,5 +46,13 @@ public class BillDto {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import com.splitbills.backend.dto.BillDto;
 import com.splitbills.backend.model.Bill;
 import com.splitbills.backend.model.Group;
+import com.splitbills.backend.model.User;
 import com.splitbills.backend.service.BillService;
 import com.splitbills.backend.service.GroupService;
+import com.splitbills.backend.service.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,9 @@ public class BillController {
     
     @Autowired
     private GroupService groupService;
+    
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public List<BillDto> getAllBills(@PathVariable Long groupId) {
@@ -39,7 +44,8 @@ public class BillController {
     @PostMapping
     public BillDto createBill(@PathVariable Long groupId, @RequestBody BillDto billDto) {
         Group group = groupService.getGroupById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
-        Bill bill = convertToEntity(billDto, group);
+        User user = userService.findUser(billDto.getUserId());
+        Bill bill = convertToEntity(billDto, group, user);
         Bill createdBill = billService.createBill(bill);
         return convertToDto(createdBill);
     }
@@ -47,7 +53,8 @@ public class BillController {
     @PutMapping("/{id}")
     public BillDto updateBill(@PathVariable Long groupId, @PathVariable Long id, @RequestBody BillDto billDto) {
         Group group = groupService.getGroupById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
-        Bill bill = convertToEntity(billDto, group);
+        User user = userService.findUser(billDto.getUserId());
+        Bill bill = convertToEntity(billDto, group, user);
         Bill updatedBill = billService.updateBill(id, bill);
         return convertToDto(updatedBill);
     }
@@ -69,16 +76,18 @@ public class BillController {
         billDto.setPrice(bill.getPrice());
         billDto.setQuantity(bill.getQuantity());
         billDto.setGroupId(bill.getGroup().getId());
+        billDto.setUserId(bill.getUser().getId());
         return billDto;
     }
 
-    private Bill convertToEntity(BillDto billDto, Group group) {
+    private Bill convertToEntity(BillDto billDto, Group group, User user) {
         Bill bill = new Bill();
         bill.setId(billDto.getId());
         bill.setName(billDto.getName());
         bill.setPrice(billDto.getPrice());
         bill.setQuantity(billDto.getQuantity());
         bill.setGroup(group);
+        bill.setUser(user);
         return bill;
     }
 }
