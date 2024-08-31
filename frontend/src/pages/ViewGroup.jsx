@@ -74,6 +74,31 @@ export default function ViewGroup() {
     }
   };
 
+  const deleteBill = async (billId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/groups/${id}/bills/${billId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete bill');
+      }
+      setBills(bills.filter(bill => bill.id !== billId));
+    } catch (error) {
+      console.error('Error deleting bill:', error.message);
+    }
+  };
+
+  const handleUpdateBillClick = (billId) => {
+    navigate(`/update-bill/groups/${id}/bills/${billId}`);
+  };
+
+  const handleAddBillClick = () => {
+    navigate(`/add-bills/${id}`);
+  };
+
   const columnDefs = useMemo(() => [
     { headerName: 'Bill Name', field: 'name', sortable: true, filter: true, flex: 1 },
     { headerName: 'Price', field: 'price', sortable: true, filter: true, flex: 1  },
@@ -86,16 +111,42 @@ export default function ViewGroup() {
       flex: 1,
       valueGetter: params => users[params.data.userId] || 'Loading...',
     },
-  ], [users]);
+    {
+      headerName: 'Update Bill',
+      field: 'actions',
+      cellRenderer: (params) => (
+        <div>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => handleUpdateBillClick(params.data.id)}
+          >
+            Update
+          </Button>
+        </div>
+      )
+    },
+    {
+      headerName: 'Delete Bill',
+      field: 'actions',
+      cellRenderer: (params) => (
+        <div>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => deleteBill(params.data.id)}
+          >
+            Delete
+          </Button>
+        </div>
+      )
+    },
+  ], [users, bills]);
 
   useEffect(() => {
     fetchGroupDetails();
     fetchBills();
   }, [id]);
-
-  const handleAddBillClick = () => {
-    navigate(`/add-bills/${id}`);
-  };
 
   return (
     <Container>

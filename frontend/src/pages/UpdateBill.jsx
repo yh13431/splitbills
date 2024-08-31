@@ -12,11 +12,12 @@ const validationSchema = Yup.object({
   userId: Yup.string().required('User selection is required')
 });
 
-export default function AddBills() {
-  const { id } = useParams();
+export default function UpdateBill() {
+  const { groupId, billId } = useParams();
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [users, setUsers] = useState([]);
+  const [bill, setBill] = useState(null);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -42,21 +43,41 @@ export default function AddBills() {
       }
     };
 
+    const fetchBill = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills/${billId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch bill details');
+        }
+        const data = await response.json();
+        setBill(data);
+      } catch (error) {
+        console.error('Error fetching bill details:', error.message);
+      }
+    };
+
     fetchUsers();
-  }, []);
+    fetchBill();
+  }, [groupId, billId]);
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      price: '',
-      quantity: '',
-      userId: ''
+      name: bill?.name || '',
+      price: bill?.price || '',
+      quantity: bill?.quantity || '',
+      userId: bill?.userId || ''
     },
+    enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        const response = await fetch(`http://localhost:8080/api/groups/${id}/bills`, {
-          method: 'POST',
+        const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills/${billId}`, {
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getAuthToken()}`
@@ -64,14 +85,14 @@ export default function AddBills() {
           body: JSON.stringify(values)
         });
         if (!response.ok) {
-          throw new Error('Failed to add bill');
+          throw new Error('Failed to update bill');
         }
         resetForm();
-        setSnackbar({ open: true, message: 'Bill added successfully', severity: 'success' });
+        setSnackbar({ open: true, message: 'Bill updated successfully', severity: 'success' });
 
-        navigate(`/view-group/${id}`);
+        navigate(`/view-group/${groupId}`);
       } catch (error) {
-        setSnackbar({ open: true, message: 'Failed to add bill', severity: 'error' });
+        setSnackbar({ open: true, message: 'Failed to update bill', severity: 'error' });
       }
     }
   });
@@ -84,7 +105,7 @@ export default function AddBills() {
     <Container>
       <Box style={{ marginTop: '10px' }}>
         <Typography variant="h4" gutterBottom>
-          Add Bills to Group
+          Update Bill
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           <TextField
@@ -143,7 +164,7 @@ export default function AddBills() {
             )}
           </FormControl>
           <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>
-            Add Bill
+            Update Bill
           </Button>
         </form>
       </Box>
