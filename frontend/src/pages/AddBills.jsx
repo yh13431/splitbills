@@ -17,6 +17,7 @@ export default function AddBills() {
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [users, setUsers] = useState([]);
+  const [groupUsers, setGroupUsers] = useState([]);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -24,26 +25,40 @@ export default function AddBills() {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchGroupAndUsers = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/users', {
+        const groupResponse = await fetch(`http://localhost:8080/api/groups/${id}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${getAuthToken()}`
           },
         });
-        if (!response.ok) {
+        if (!groupResponse.ok) {
+          throw new Error('Failed to fetch group data');
+        }
+        const groupData = await groupResponse.json();
+        setGroupUsers(groupData.users);
+
+        const usersResponse = await fetch('http://localhost:8080/api/users', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
+        });
+        if (!usersResponse.ok) {
           throw new Error('Failed to fetch users');
         }
-        const data = await response.json();
-        setUsers(data);
+        const usersData = await usersResponse.json();
+        // Filter users based on group membership
+        const filteredUsers = usersData.filter(user => groupData.users.includes(user.id));
+        setUsers(filteredUsers);
       } catch (error) {
-        console.error('Error fetching users:', error.message);
+        console.error('Error fetching data:', error.message);
       }
     };
 
-    fetchUsers();
-  }, []);
+    fetchGroupAndUsers();
+  }, [id]);
 
   const formik = useFormik({
     initialValues: {

@@ -11,6 +11,11 @@ export default function Home() {
     return authData ? authData.token : '';
   };
 
+  const getUserId = () => {
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    return authData ? authData.user : '';
+  };
+
   const fetchGroups = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/groups`, {
@@ -23,7 +28,9 @@ export default function Home() {
         throw new Error('Failed to fetch groups');
       }
       const data = await response.json();
-      setGroups(data);
+      const userId = getUserId();
+      const userGroups = data.filter(group => group.users.includes(userId));
+      setGroups(userGroups);
     } catch (error) {
       console.error('Error fetching groups:', error.message);
     }
@@ -52,31 +59,29 @@ export default function Home() {
 
   return (
     <Container>
-      {Object.keys(groups).length === 0 ? (
+      {groups.length === 0 ? (
         <Typography variant="body1">No groups available</Typography>
       ) : (
-        Object.values(groups).map((group) => (
+        groups.map((group) => (
           <Card key={group.id} style={{ marginTop: '20px' }}>
             <CardContent>
-                <>
-                  <Typography variant="h6">{group.name}</Typography>
-                  <Button
-                    variant="contained"
-                    color="info"
-                    onClick={() => navigate(`/view-group/${group.id}`)}
-                    style={{ marginTop: '20px', marginLeft: '10px' }}
-                  >
-                    View Group
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => deleteGroup(group.id)}
-                    style={{ marginTop: '20px' }}
-                  >
-                    Delete Group
-                  </Button>
-                </>
+              <Typography variant="h6">{group.name}</Typography>
+              <Button
+                variant="contained"
+                color="info"
+                onClick={() => navigate(`/view-group/${group.id}`)}
+                style={{ marginTop: '20px', marginLeft: '10px' }}
+              >
+                View Group
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => deleteGroup(group.id)}
+                style={{ marginTop: '20px' }}
+              >
+                Delete Group
+              </Button>
             </CardContent>
           </Card>
         ))

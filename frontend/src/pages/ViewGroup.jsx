@@ -11,6 +11,7 @@ export default function ViewGroup() {
   const [groupName, setGroupName] = useState('');
   const [bills, setBills] = useState([]);
   const [users, setUsers] = useState({});
+  const [groupUsers, setGroupUsers] = useState([]);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -19,17 +20,20 @@ export default function ViewGroup() {
 
   const fetchGroupDetails = async () => {
     try {
-      const groupResponse = await fetch(`http://localhost:8080/api/groups/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/groups/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${getAuthToken()}`
         },
       });
-      if (!groupResponse.ok) {
+      if (!response.ok) {
         throw new Error('Failed to fetch group details');
       }
-      const groupData = await groupResponse.json();
+      const groupData = await response.json();
       setGroupName(groupData.name);
+      setGroupUsers(groupData.users);
+
+      groupData.users.forEach(userId => fetchUserDetails(userId));
     } catch (error) {
       console.error('Error fetching group details:', error.message);
     }
@@ -66,9 +70,6 @@ export default function ViewGroup() {
       }
       const data = await response.json();
       setBills(data);
-
-      const userIds = [...new Set(data.map(bill => bill.userId))];
-      userIds.forEach(userId => fetchUserDetails(userId));
     } catch (error) {
       console.error('Error fetching bills:', error.message);
     }
@@ -97,6 +98,10 @@ export default function ViewGroup() {
 
   const handleAddBillClick = () => {
     navigate(`/add-bills/${id}`);
+  };
+
+  const handleAddUserClick = () => {
+    navigate(`/add-users/${id}`);
   };
 
   const columnDefs = useMemo(() => [
@@ -153,6 +158,14 @@ export default function ViewGroup() {
       <Box style={{ marginTop: '20px' }}>
         <Typography variant="h4">{groupName}</Typography>
         <Typography variant="h6">Bills: {bills.length}</Typography>
+        <Typography variant="h6" gutterBottom>
+          Users in Group:
+        </Typography>
+        <ul>
+          {groupUsers.map(userId => (
+            <li key={userId}>{users[userId] || 'Loading...'}</li>
+          ))}
+        </ul>
         <Button
           variant="contained"
           color="primary"
@@ -160,6 +173,14 @@ export default function ViewGroup() {
           style={{ marginBottom: '20px' }}
         >
           Add Bill
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddUserClick}
+          style={{ marginBottom: '20px', marginLeft: '10px' }}
+        >
+          Add User
         </Button>
         <Box style={{ height: '400px' }}>
           <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
