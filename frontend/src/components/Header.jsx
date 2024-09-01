@@ -15,6 +15,9 @@ const Header = () => {
         <Button variant="contained" color="primary" component={Link} to="/create-group">
           Create New Group
         </Button>
+        <Button variant="contained" color="primary" component={Link} to="/view-debts">
+          View Debts
+        </Button>
           <Box>
             <Button color="inherit" component={Link} to="/login">
               Log In

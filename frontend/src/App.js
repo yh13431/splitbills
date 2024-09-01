@@ -12,6 +12,7 @@ import AddBills from "./pages/AddBills";
 import AddUsers from "./pages/AddUsers";
 import ViewGroup from "./pages/ViewGroup";
 import UpdateBill from "./pages/UpdateBill";
+import ViewDebts from "./pages/ViewDebts";
 
 const queryClient = new QueryClient()
 
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "/view-group/:id",
         element: <ViewGroup />
+      },
+      {
+        path: "/view-debts",
+        element: <ViewDebts />
       },
       {
         path: "/register",
