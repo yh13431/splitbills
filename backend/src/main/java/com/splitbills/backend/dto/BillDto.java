@@ -4,9 +4,9 @@ public class BillDto {
     private Long id;
     private String name;
     private Double price;
-    private Double quantity;
     private Long groupId;
     private Long userId;
+    private Long recipientUserId;
 
     public Long getId() {
         return id;
@@ -32,14 +32,6 @@ public class BillDto {
         this.price = price;
     }
 
-    public Double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
-    }
-    
     public Long getGroupId() {
         return groupId;
     }
@@ -54,5 +46,13 @@ public class BillDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getRecipientUserId() {
+        return recipientUserId;
+    }
+
+    public void setRecipientUserId(Long recipientUserId) {
+        this.recipientUserId = recipientUserId;
     }
 }

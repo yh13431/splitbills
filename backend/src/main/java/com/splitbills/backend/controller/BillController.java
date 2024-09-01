@@ -45,7 +45,8 @@ public class BillController {
     public BillDto createBill(@PathVariable Long groupId, @RequestBody BillDto billDto) {
         Group group = groupService.getGroupById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
         User user = userService.findUser(billDto.getUserId());
-        Bill bill = convertToEntity(billDto, group, user);
+        User recipientUser = userService.findUser(billDto.getRecipientUserId());
+        Bill bill = convertToEntity(billDto, group, user, recipientUser);
         Bill createdBill = billService.createBill(bill);
         return convertToDto(createdBill);
     }
@@ -54,7 +55,8 @@ public class BillController {
     public BillDto updateBill(@PathVariable Long groupId, @PathVariable Long id, @RequestBody BillDto billDto) {
         Group group = groupService.getGroupById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
         User user = userService.findUser(billDto.getUserId());
-        Bill bill = convertToEntity(billDto, group, user);
+        User recipientUser = userService.findUser(billDto.getRecipientUserId());
+        Bill bill = convertToEntity(billDto, group, user, recipientUser);
         Bill updatedBill = billService.updateBill(id, bill);
         return convertToDto(updatedBill);
     }
@@ -74,20 +76,22 @@ public class BillController {
         billDto.setId(bill.getId());
         billDto.setName(bill.getName());
         billDto.setPrice(bill.getPrice());
-        billDto.setQuantity(bill.getQuantity());
         billDto.setGroupId(bill.getGroup().getId());
         billDto.setUserId(bill.getUser().getId());
+        if (bill.getRecipientUser() != null) {
+            billDto.setRecipientUserId(bill.getRecipientUser().getId());
+        }
         return billDto;
     }
 
-    private Bill convertToEntity(BillDto billDto, Group group, User user) {
+    private Bill convertToEntity(BillDto billDto, Group group, User user, User recipientUser) {
         Bill bill = new Bill();
         bill.setId(billDto.getId());
         bill.setName(billDto.getName());
         bill.setPrice(billDto.getPrice());
-        bill.setQuantity(billDto.getQuantity());
         bill.setGroup(group);
         bill.setUser(user);
+        bill.setRecipientUser(recipientUser);
         return bill;
     }
 }

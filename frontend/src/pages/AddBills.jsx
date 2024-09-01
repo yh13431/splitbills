@@ -8,21 +8,27 @@ import { useParams, useNavigate } from 'react-router-dom';
 const validationSchema = Yup.object({
   name: Yup.string().required('Bill name is required'),
   price: Yup.number().positive('Price must be a positive number').required('Price is required'),
-  quantity: Yup.number().positive('Quantity must be a positive number').required('Quantity is required'),
-  userId: Yup.string().required('User selection is required')
+  recipientUserId: Yup.string().required('Recipient user selection is required')
 });
 
 export default function AddBills() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-  const [users, setUsers] = useState([]);
   const [groupUsers, setGroupUsers] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
     return authData ? authData.token : '';
   };
+
+  const getUserId = () => {
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    return authData ? authData.user : '';
+  };
+
+  const userId = getUserId();
 
   useEffect(() => {
     const fetchGroupAndUsers = async () => {
@@ -49,7 +55,6 @@ export default function AddBills() {
           throw new Error('Failed to fetch users');
         }
         const usersData = await usersResponse.json();
-        // Filter users based on group membership
         const filteredUsers = usersData.filter(user => groupData.users.includes(user.id));
         setUsers(filteredUsers);
       } catch (error) {
@@ -64,8 +69,8 @@ export default function AddBills() {
     initialValues: {
       name: '',
       price: '',
-      quantity: '',
-      userId: ''
+      userId: userId,
+      recipientUserId: ''
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -125,27 +130,15 @@ export default function AddBills() {
             margin="normal"
             type="number"
           />
-          <TextField
-            label="Quantity"
-            name="quantity"
-            value={formik.values.quantity}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.quantity && Boolean(formik.errors.quantity)}
-            helperText={formik.touched.quantity && formik.errors.quantity}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
           <FormControl fullWidth margin="normal">
-            <InputLabel>User</InputLabel>
+            <InputLabel>Recipient User</InputLabel>
             <Select
-              label="User"
-              name="userId"
-              value={formik.values.userId}
+              label="Recipient User"
+              name="recipientUserId"
+              value={formik.values.recipientUserId}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.userId && Boolean(formik.errors.userId)}
+              error={formik.touched.recipientUserId && Boolean(formik.errors.recipientUserId)}
             >
               {users.map(user => (
                 <MenuItem key={user.id} value={user.id}>
@@ -153,8 +146,8 @@ export default function AddBills() {
                 </MenuItem>
               ))}
             </Select>
-            {formik.touched.userId && formik.errors.userId && (
-              <Typography color="error" variant="body2">{formik.errors.userId}</Typography>
+            {formik.touched.recipientUserId && formik.errors.recipientUserId && (
+              <Typography color="error" variant="body2">{formik.errors.recipientUserId}</Typography>
             )}
           </FormControl>
           <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>

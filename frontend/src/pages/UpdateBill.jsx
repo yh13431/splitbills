@@ -8,8 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 const validationSchema = Yup.object({
   name: Yup.string().required('Bill name is required'),
   price: Yup.number().positive('Price must be a positive number').required('Price is required'),
-  quantity: Yup.number().positive('Quantity must be a positive number').required('Quantity is required'),
-  userId: Yup.string().required('User selection is required')
+  recipientUserId: Yup.string().required('Recipient user selection is required')
 });
 
 export default function UpdateBill() {
@@ -25,21 +24,34 @@ export default function UpdateBill() {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchGroupUsers = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/users', {
+        const groupResponse = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${getAuthToken()}`
           },
         });
-        if (!response.ok) {
+        if (!groupResponse.ok) {
+          throw new Error('Failed to fetch group data');
+        }
+        const groupData = await groupResponse.json();
+        const groupUserIds = groupData.users;
+
+        const usersResponse = await fetch('http://localhost:8080/api/users', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
+        });
+        if (!usersResponse.ok) {
           throw new Error('Failed to fetch users');
         }
-        const data = await response.json();
-        setUsers(data);
+        const usersData = await usersResponse.json();
+        const filteredUsers = usersData.filter(user => groupUserIds.includes(user.id));
+        setUsers(filteredUsers);
       } catch (error) {
-        console.error('Error fetching users:', error.message);
+        console.error('Error fetching data:', error.message);
       }
     };
 
@@ -61,7 +73,7 @@ export default function UpdateBill() {
       }
     };
 
-    fetchUsers();
+    fetchGroupUsers();
     fetchBill();
   }, [groupId, billId]);
 
@@ -69,8 +81,8 @@ export default function UpdateBill() {
     initialValues: {
       name: bill?.name || '',
       price: bill?.price || '',
-      quantity: bill?.quantity || '',
-      userId: bill?.userId || ''
+      userId: bill?.userId,
+      recipientUserId: bill?.recipientUserId || ''
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
@@ -131,27 +143,15 @@ export default function UpdateBill() {
             margin="normal"
             type="number"
           />
-          <TextField
-            label="Quantity"
-            name="quantity"
-            value={formik.values.quantity}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.quantity && Boolean(formik.errors.quantity)}
-            helperText={formik.touched.quantity && formik.errors.quantity}
-            fullWidth
-            margin="normal"
-            type="number"
-          />
           <FormControl fullWidth margin="normal">
-            <InputLabel>User</InputLabel>
+            <InputLabel>Recipient User</InputLabel>
             <Select
-              label="User"
-              name="userId"
-              value={formik.values.userId}
+              label="Recipient User"
+              name="recipientUserId"
+              value={formik.values.recipientUserId}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.userId && Boolean(formik.errors.userId)}
+              error={formik.touched.recipientUserId && Boolean(formik.errors.recipientUserId)}
             >
               {users.map(user => (
                 <MenuItem key={user.id} value={user.id}>
@@ -159,8 +159,8 @@ export default function UpdateBill() {
                 </MenuItem>
               ))}
             </Select>
-            {formik.touched.userId && formik.errors.userId && (
-              <Typography color="error" variant="body2">{formik.errors.userId}</Typography>
+            {formik.touched.recipientUserId && formik.errors.recipientUserId && (
+              <Typography color="error" variant="body2">{formik.errors.recipientUserId}</Typography>
             )}
           </FormControl>
           <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>

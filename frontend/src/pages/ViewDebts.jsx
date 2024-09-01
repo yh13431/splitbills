@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Card, CardContent, List, ListItem, Button, Box } from '@mui/material';
+import { Container, Typography, Card, CardContent, List, ListItem, Button, Box, Stack } from '@mui/material';
 
 export default function ViewDebts() {
   const [debts, setDebts] = useState({});
@@ -54,6 +54,25 @@ export default function ViewDebts() {
     }
   };
 
+  const fetchUserName = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch user name');
+      }
+      const userData = await response.json();
+      return userData.username;
+    } catch (error) {
+      console.error('Error fetching user name:', error.message);
+      return '';
+    }
+  };
+
   const fetchBills = async (groupId) => {
     try {
       const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills`, {
@@ -65,7 +84,12 @@ export default function ViewDebts() {
       if (!response.ok) {
         throw new Error('Failed to fetch bills');
       }
-      return await response.json();
+      const bills = await response.json();
+      const billsWithUserNames = await Promise.all(bills.map(async (bill) => {
+        const userName = await fetchUserName(bill.recipientUserId);
+        return { ...bill, recipientUserName: userName };
+      }));
+      return billsWithUserNames;
     } catch (error) {
       console.error('Error fetching bills:', error.message);
       return [];
@@ -107,7 +131,6 @@ export default function ViewDebts() {
       
       filteredBills.forEach(bill => {
         const amountPerUser = (bill.price * bill.quantity);
-
         userDebts[bill.userId] = (userDebts[bill.userId] || 0) + amountPerUser;
       });
 
@@ -137,10 +160,18 @@ export default function ViewDebts() {
               <Typography variant="h6">{groupNames[groupId]}</Typography>
               <List>
                 {bills.map(bill => (
-                  <ListItem key={bill.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="body1">
-                      {bill.name}: ${bill.price}
-                    </Typography>
+                  <ListItem key={bill.id} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <Stack spacing={1} style={{ flex: 1 }}>
+                      <Typography variant="body1">
+                        {bill.name}
+                      </Typography>
+                      <Typography variant="body1">
+                        ${bill.price}
+                      </Typography>
+                      <Typography variant="body1">
+                        Pay to: {bill.recipientUserName}
+                      </Typography>
+                    </Stack>
                     <Box>
                       <Button
                         variant="contained"

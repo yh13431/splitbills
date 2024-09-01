@@ -107,7 +107,6 @@ export default function ViewGroup() {
   const columnDefs = useMemo(() => [
     { headerName: 'Bill Name', field: 'name', sortable: true, filter: true, flex: 1 },
     { headerName: 'Price', field: 'price', sortable: true, filter: true, flex: 1  },
-    { headerName: 'Quantity', field: 'quantity', sortable: true, filter: true, flex: 1  },
     {
       headerName: 'Belongs to',
       field: 'userId',
@@ -115,6 +114,14 @@ export default function ViewGroup() {
       filter: true,
       flex: 1,
       valueGetter: params => users[params.data.userId] || 'Loading...',
+    },
+    {
+      headerName: 'Pay to',
+      field: 'userId',
+      sortable: true,
+      filter: true,
+      flex: 1,
+      valueGetter: params => users[params.data.recipientUserId] || 'Loading...',
     },
     {
       headerName: 'Update Bill',

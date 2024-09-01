@@ -16,9 +16,6 @@ public class Bill {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "quantity")
-    private Double quantity;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
@@ -26,6 +23,10 @@ public class Bill {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_user_id", nullable = false)
+    private User recipientUser;
 
     public Long getId() {
         return id;
@@ -51,14 +52,6 @@ public class Bill {
         this.price = price;
     }
 
-    public Double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
-    }
-
     public Group getGroup() {
         return group;
     }
@@ -73,5 +66,13 @@ public class Bill {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    
+    public User getRecipientUser() {
+        return recipientUser;
+    }
+
+    public void setRecipientUser(User recipientUser) {
+        this.recipientUser = recipientUser;
     }
 }
