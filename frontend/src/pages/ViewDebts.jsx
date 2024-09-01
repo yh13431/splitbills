@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Card, CardContent, List, ListItem } from '@mui/material';
+import { Container, Typography, Card, CardContent, List, ListItem, Button, Box } from '@mui/material';
 
 export default function ViewDebts() {
   const [debts, setDebts] = useState({});
@@ -72,32 +72,54 @@ export default function ViewDebts() {
     }
   };
 
+  const handleDeleteBill = async (groupId, billId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills/${billId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete bill');
+      }
+      calculateDebts();
+    } catch (error) {
+      console.error('Error deleting bill:', error.message);
+    }
+  };
+
+  const handleGoToGroup = (groupId) => {
+    window.location.href = `/view-group/${groupId}`;
+  };
+
   const calculateDebts = async () => {
     const groupIds = await fetchUserGroups();
     const debtsByGroup = {};
     const namesByGroup = {};
-  
+
     for (const groupId of groupIds) {
       const bills = await fetchBills(groupId);
       const groupName = await fetchGroupName(groupId);
       const userDebts = {};
-  
+
       const filteredBills = bills.filter(bill => bill.userId === getUserId());
       
       filteredBills.forEach(bill => {
         const amountPerUser = (bill.price * bill.quantity);
-  
+
         userDebts[bill.userId] = (userDebts[bill.userId] || 0) + amountPerUser;
       });
-  
-      debtsByGroup[groupId] = { bills: filteredBills, userDebts };
-      namesByGroup[groupId] = groupName;
+
+      if (filteredBills.length > 0) {
+        debtsByGroup[groupId] = { bills: filteredBills, userDebts };
+        namesByGroup[groupId] = groupName;
+      }
     }
-  
+
     setDebts(debtsByGroup);
     setGroupNames(namesByGroup);
   };
-  
 
   useEffect(() => {
     calculateDebts();
@@ -115,10 +137,26 @@ export default function ViewDebts() {
               <Typography variant="h6">{groupNames[groupId]}</Typography>
               <List>
                 {bills.map(bill => (
-                  <ListItem key={bill.id}>
+                  <ListItem key={bill.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant="body1">
                       {bill.name}: ${bill.price}
                     </Typography>
+                    <Box>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleGoToGroup(groupId)}
+                      >
+                        Go to Group
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleDeleteBill(groupId, bill.id)}
+                      >
+                        Delete Bill
+                      </Button>
+                    </Box>
                   </ListItem>
                 ))}
               </List>
@@ -127,5 +165,5 @@ export default function ViewDebts() {
         ))
       )}
     </Container>
-  );  
+  );
 }
