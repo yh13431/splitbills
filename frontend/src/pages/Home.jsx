@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Card, CardContent } from '@mui/material';
+import { Container, Typography, Button, Card, CardContent, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
@@ -60,32 +60,41 @@ export default function Home() {
   return (
     <Container>
       {groups.length === 0 ? (
-        <Typography variant="body1">No groups available</Typography>
+        <Typography variant="body1" align="center" color="textSecondary" style={{ marginTop: '20px' }}>
+          No groups available
+        </Typography>
       ) : (
-        groups.map((group) => (
-          <Card key={group.id} style={{ marginTop: '20px' }}>
-            <CardContent>
-              <Typography variant="h6">{group.name}</Typography>
-              <Button
-                variant="contained"
-                color="info"
-                onClick={() => navigate(`/view-group/${group.id}`)}
-                style={{ marginTop: '20px', marginLeft: '10px' }}
-              >
-                View Group
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => deleteGroup(group.id)}
-                style={{ marginTop: '20px' }}
-              >
-                Delete Group
-              </Button>
-            </CardContent>
-          </Card>
-        ))
+        <Grid container spacing={3} style={{ marginTop: '20px' }}>
+          {groups.map((group) => (
+            <Grid item xs={12} sm={6} md={4} key={group.id}>
+              <Card elevation={3} style={{ borderRadius: '8px', overflow: 'hidden' }}>
+                <CardContent>
+                  <Typography variant="h6" style={{ fontWeight: 600 }}>
+                    {group.name}
+                  </Typography>
+                  <div style={{ marginTop: '20px' }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate(`/view-group/${group.id}`)}
+                      style={{ marginRight: '10px' }}
+                    >
+                      View Group
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => deleteGroup(group.id)}
+                    >
+                      Delete Group
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
     </Container>
-  );
+  )
 }

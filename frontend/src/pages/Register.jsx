@@ -39,11 +39,11 @@ const Register = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Card>
+        <Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+            <Card sx={{ borderRadius: 2, boxShadow: 3, p: 3, width: '100%', maxWidth: 400 }}>
                 <CardContent>
                     <Box mb={3}>
-                        <Typography variant="h4" component="h1" align="center">
+                        <Typography variant="h4" component="h1" align="center" gutterBottom>
                             Register
                         </Typography>
                     </Box>
@@ -58,6 +58,8 @@ const Register = () => {
                                 value={formik.values.username}
                                 onChange={formik.handleChange}
                                 variant="outlined"
+                                size="small"
+                                sx={{ borderRadius: 1 }}
                             />
                         </Box>
                         <Box mb={2}>
@@ -70,6 +72,8 @@ const Register = () => {
                                 value={formik.values.email}
                                 onChange={formik.handleChange}
                                 variant="outlined"
+                                size="small"
+                                sx={{ borderRadius: 1 }}
                             />
                         </Box>
                         <Box mb={2}>
@@ -82,6 +86,8 @@ const Register = () => {
                                 value={formik.values.password}
                                 onChange={formik.handleChange}
                                 variant="outlined"
+                                size="small"
+                                sx={{ borderRadius: 1 }}
                             />
                         </Box>
                         <Button
@@ -90,12 +96,19 @@ const Register = () => {
                             variant="contained"
                             color="primary"
                             disabled={formik.isSubmitting}
+                            sx={{
+                                borderRadius: 1,
+                                boxShadow: 2,
+                                '&:hover': {
+                                    boxShadow: 4
+                                }
+                            }}
                         >
                             Register
                         </Button>
                         <Box mt={2} textAlign="center">
                             <Typography variant="body2">
-                                Have an account? <Link to="/login">Log In</Link>
+                                Have an account? <Link to="/login" style={{ color: '#1976d2' }}>Log In</Link>
                             </Typography>
                         </Box>
                     </form>

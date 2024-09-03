@@ -48,11 +48,11 @@ const Login = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Card>
+        <Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+            <Card sx={{ borderRadius: 2, boxShadow: 3, p: 3, width: '100%', maxWidth: 400 }}>
                 <CardContent>
                     <Box mb={3}>
-                        <Typography variant="h4" component="h1" align="center">
+                        <Typography variant="h4" component="h1" align="center" gutterBottom>
                             Log In
                         </Typography>
                     </Box>
@@ -67,6 +67,8 @@ const Login = () => {
                                 value={formik.values.username}
                                 onChange={formik.handleChange}
                                 variant="outlined"
+                                size="small"
+                                sx={{ borderRadius: 1 }}
                             />
                         </Box>
                         <Box mb={2}>
@@ -79,6 +81,8 @@ const Login = () => {
                                 value={formik.values.password}
                                 onChange={formik.handleChange}
                                 variant="outlined"
+                                size="small"
+                                sx={{ borderRadius: 1 }}
                             />
                         </Box>
                         <Button
@@ -87,12 +91,19 @@ const Login = () => {
                             variant="contained"
                             color="primary"
                             disabled={formik.isSubmitting}
+                            sx={{
+                                borderRadius: 1,
+                                boxShadow: 2,
+                                '&:hover': {
+                                    boxShadow: 4
+                                }
+                            }}
                         >
                             Log In
                         </Button>
                         <Box mt={2} textAlign="center">
                             <Typography variant="body2">
-                                No account? <Link to="/register">Register Here</Link>
+                                No account? <Link to="/register" style={{ color: '#1976d2' }}>Register Here</Link>
                             </Typography>
                         </Box>
                     </form>

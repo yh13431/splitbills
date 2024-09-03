@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Select, MenuItem, Button, Box, FormControl, InputLabel, Snackbar, Alert, Chip } from '@mui/material';
+import { Container, Box, Typography, FormControl, InputLabel, Select, MenuItem, Chip, Button, Snackbar, Alert } from '@mui/material';
 
 export default function AddUsers() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
+  const [groupName, setGroupName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -33,8 +34,27 @@ export default function AddUsers() {
     }
   };
 
+  const fetchGroupDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/groups/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch group details');
+      }
+      const data = await response.json();
+      setGroupName(data.name);
+    } catch (error) {
+      console.error('Error fetching group details:', error.message);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchGroupDetails();
   }, []);
 
   const handleAddUser = async () => {
@@ -54,7 +74,6 @@ export default function AddUsers() {
         if (!response.ok) {
           throw new Error(`Failed to add user with ID ${userId}`);
         }
-        const data = await response.json();
       }
       setSuccess('Users added successfully!');
       setError('');
@@ -70,12 +89,20 @@ export default function AddUsers() {
   };
 
   return (
-    <Container>
-      <Box style={{ marginTop: '10px' }}>
-        <Typography variant="h4" gutterBottom>
-          Add Users to Group {id}
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 4,
+          p: 3,
+          boxShadow: 3,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+        }}
+      >
+        <Typography variant="h5" component="h1" align="center" gutterBottom>
+          Add Users to {groupName ? `${groupName}` : 'Group'}
         </Typography>
-        <FormControl fullWidth margin="normal">
+        <FormControl fullWidth margin="normal" variant="outlined">
           <InputLabel id="user-select-label">Select Users</InputLabel>
           <Select
             labelId="user-select-label"
@@ -83,12 +110,12 @@ export default function AddUsers() {
             value={selectedUsers}
             onChange={handleChange}
             renderValue={(selected) => (
-              <div>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((userId) => {
                   const user = allUsers.find((u) => u.id === userId);
                   return <Chip key={userId} label={user?.username} />;
                 })}
-              </div>
+              </Box>
             )}
           >
             {allUsers.map((user) => (
@@ -102,25 +129,22 @@ export default function AddUsers() {
           variant="contained"
           color="primary"
           onClick={handleAddUser}
-          style={{ marginTop: '10px' }}
+          fullWidth
+          sx={{ mt: 2 }}
         >
           Add Users
         </Button>
-        {error && (
-          <Snackbar open={Boolean(error)} autoHideDuration={6000} onClose={() => setError('')}>
-            <Alert onClose={() => setError('')} severity="error">
-              {error}
-            </Alert>
-          </Snackbar>
-        )}
-        {success && (
-          <Snackbar open={Boolean(success)} autoHideDuration={6000} onClose={() => setSuccess('')}>
-            <Alert onClose={() => setSuccess('')} severity="success">
-              {success}
-            </Alert>
-          </Snackbar>
-        )}
       </Box>
+      <Snackbar open={Boolean(error)} autoHideDuration={6000} onClose={() => setError('')}>
+        <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={Boolean(success)} autoHideDuration={6000} onClose={() => setSuccess('')}>
+        <Alert onClose={() => setSuccess('')} severity="success" sx={{ width: '100%' }}>
+          {success}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

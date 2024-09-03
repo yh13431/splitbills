@@ -115,13 +115,14 @@ export default function UpdateBill() {
 
   return (
     <Container>
-      <Box style={{ marginTop: '10px' }}>
+      <Box sx={{ marginTop: 2 }}>
         <Typography variant="h4" gutterBottom>
+          <i className="fas fa-edit" style={{ marginRight: 8 }}></i>
           Update Bill
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           <TextField
-            label="Bill Name"
+            label={<span><i className="fas fa-file-alt" style={{ marginRight: 8 }}></i>Bill Name</span>}
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
@@ -132,7 +133,7 @@ export default function UpdateBill() {
             margin="normal"
           />
           <TextField
-            label="Price"
+            label={<span><i className="fas fa-dollar-sign" style={{ marginRight: 8 }}></i>Amount</span>}
             name="price"
             value={formik.values.price}
             onChange={formik.handleChange}
@@ -144,9 +145,9 @@ export default function UpdateBill() {
             type="number"
           />
           <FormControl fullWidth margin="normal">
-            <InputLabel>Recipient User</InputLabel>
+            <InputLabel><i className="fas fa-user" style={{ marginRight: 8 }}></i>Recipient</InputLabel>
             <Select
-              label="Recipient User"
+              label="Recipient"
               name="recipientUserId"
               value={formik.values.recipientUserId}
               onChange={formik.handleChange}
@@ -163,16 +164,22 @@ export default function UpdateBill() {
               <Typography color="error" variant="body2">{formik.errors.recipientUserId}</Typography>
             )}
           </FormControl>
-          <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{ marginTop: 2 }}
+            startIcon={<i className="fas fa-save"></i>}
+          >
             Update Bill
           </Button>
         </form>
       </Box>
-      <CustomSnackbar 
-        open={snackbar.open} 
-        onClose={handleCloseSnackbar} 
-        message={snackbar.message} 
-        severity={snackbar.severity} 
+      <CustomSnackbar
+        open={snackbar.open}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </Container>
   );

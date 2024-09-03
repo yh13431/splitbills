@@ -150,35 +150,52 @@ export default function ViewDebts() {
 
   return (
     <Container>
-      <Typography variant="h4" style={{ marginTop: '20px' }}>Outstanding Bills</Typography>
+      <Typography variant="h4" sx={{ marginTop: 4 }}>
+        <i className="fas fa-money-bill-wave" style={{ marginRight: 8 }} />
+        Outstanding Bills
+      </Typography>
       {Object.keys(debts).length === 0 ? (
-        <Typography variant="body1">I have no debts!</Typography>
+        <Typography variant="body1" sx={{ marginTop: 2 }}>
+          <i className="fas fa-check-circle" style={{ marginRight: 8 }} />
+          I have no debts!
+        </Typography>
       ) : (
         Object.entries(debts).map(([groupId, { bills }]) => (
-          <Card key={groupId} style={{ marginTop: '20px' }}>
+          <Card key={groupId} sx={{ marginTop: 3, boxShadow: 3 }}>
             <CardContent>
-              <Typography variant="h6">{groupNames[groupId]}</Typography>
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                <i className="fas fa-users" style={{ marginRight: 8 }} />
+                {groupNames[groupId]}
+              </Typography>
               <List>
                 {bills.map(bill => (
-                  <ListItem key={bill.id} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <Stack spacing={1} style={{ flex: 1 }}>
+                  <ListItem
+                    key={bill.id}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingY: 2 }}
+                  >
+                    <Stack spacing={1} sx={{ flex: 1 }}>
                       <Typography variant="body1">
+                        <i className="fas fa-receipt" style={{ marginRight: 8 }} />
                         {bill.name}
                       </Typography>
                       <Typography variant="body1">
+                        <i className="fas fa-dollar-sign" style={{ marginRight: 8 }} />
                         ${bill.price}
                       </Typography>
                       <Typography variant="body1">
-                        Pay to: {bill.recipientUserName}
+                        <i className="fas fa-hand-holding-usd" style={{ marginRight: 8 }} />
+                        {bill.recipientUserName}
                       </Typography>
                     </Stack>
                     <Box>
                       <Button
                         variant="contained"
                         color="primary"
+                        sx={{ marginRight: 1 }}
                         onClick={() => handleGoToGroup(groupId)}
                       >
                         Go to Group
+                        <i className="fas fa-arrow-right" style={{ marginLeft: 8 }} />
                       </Button>
                       <Button
                         variant="contained"
@@ -186,6 +203,7 @@ export default function ViewDebts() {
                         onClick={() => handleDeleteBill(groupId, bill.id)}
                       >
                         Delete Bill
+                        <i className="fas fa-trash-alt" style={{ marginLeft: 8 }} />
                       </Button>
                     </Box>
                   </ListItem>

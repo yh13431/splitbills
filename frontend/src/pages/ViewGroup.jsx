@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Typography, Box, Button } from '@mui/material';
+import { Container, Box, Typography, Button, List, ListItem, ListItemText } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -105,44 +105,80 @@ export default function ViewGroup() {
   };
 
   const columnDefs = useMemo(() => [
-    { headerName: 'Bill Name', field: 'name', sortable: true, filter: true, flex: 1 },
-    { headerName: 'Price', field: 'price', sortable: true, filter: true, flex: 1  },
+    { 
+      headerName: 'Bill Name', 
+      field: 'name', 
+      sortable: true, 
+      filter: true, 
+      flex: 1,
+      cellStyle: { textAlign: 'center' },
+      headerClass: 'ag-header-custom'
+    },
+    { 
+      headerName: 'Amount', 
+      field: 'price', 
+      sortable: true, 
+      filter: true, 
+      flex: 1,
+      cellStyle: { textAlign: 'center' },
+      headerClass: 'ag-header-custom',
+      valueFormatter: params => `$${params.value.toFixed(2)}`
+    },
     {
       headerName: 'Belongs to',
       field: 'userId',
       sortable: true,
       filter: true,
       flex: 1,
+      cellStyle: { textAlign: 'center' },
+      headerClass: 'ag-header-custom',
       valueGetter: params => users[params.data.userId] || 'Loading...',
     },
     {
       headerName: 'Pay to',
-      field: 'userId',
+      field: 'recipientUserId',
       sortable: true,
       filter: true,
       flex: 1,
+      cellStyle: { textAlign: 'center' },
+      headerClass: 'ag-header-custom',
       valueGetter: params => users[params.data.recipientUserId] || 'Loading...',
     },
     {
       headerName: 'Update Bill',
       field: 'actions',
       cellRenderer: (params) => (
-        <div>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100%' 
+          }}
+        >
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={() => handleUpdateBillClick(params.data.id)}
           >
             Update
           </Button>
-        </div>
-      )
+        </Box>
+      ),
+      headerClass: 'ag-header-custom'
     },
     {
       headerName: 'Delete Bill',
       field: 'actions',
       cellRenderer: (params) => (
-        <div>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100%' 
+          }}
+        >
           <Button
             variant="contained"
             color="secondary"
@@ -150,9 +186,10 @@ export default function ViewGroup() {
           >
             Delete
           </Button>
-        </div>
-      )
-    },
+        </Box>
+      ),
+      headerClass: 'ag-header-custom'
+    }
   ], [users, bills]);
 
   useEffect(() => {
@@ -162,43 +199,54 @@ export default function ViewGroup() {
 
   return (
     <Container>
-      <Box style={{ marginTop: '20px' }}>
-        <Typography variant="h4">{groupName}</Typography>
-        <Typography variant="h6">Bills: {bills.length}</Typography>
-        <Typography variant="h6" gutterBottom>
-          Users in Group:
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          <i className="fas fa-money-bill-wave" style={{ marginRight: 8 }}></i>
+          {groupName}
         </Typography>
-        <ul>
-          {groupUsers.map(userId => (
-            <li key={userId}>{users[userId] || 'Loading...'}</li>
-          ))}
-        </ul>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddBillClick}
-          style={{ marginBottom: '20px' }}
-        >
-          Add Bill
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddUserClick}
-          style={{ marginBottom: '20px', marginLeft: '10px' }}
-        >
-          Add User
-        </Button>
-        <Box style={{ height: '400px' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+          <Box>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ marginRight: 1 }}
+              onClick={handleAddBillClick}
+            >
+              <i className="fas fa-plus" style={{ marginRight: 8 }} />
+              Add Bill
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddUserClick}
+            >
+              <i className="fas fa-user" style={{ marginRight: 8 }} />
+              Add User
+            </Button>
+          </Box>
+        </Box>
+        <Box sx={{ marginBottom: 2 }}>
+          <Typography variant="h6">Users:</Typography>
+          <List dense>
+            {groupUsers.map(userId => (
+              <ListItem key={userId} disableGutters>
+                <i className="fas fa-user" style={{ marginRight: 8 }} />
+                <ListItemText primary={users[userId] || 'Loading...'} />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        <Box sx={{ height: 400 }}>
           <div className="ag-theme-alpine" style={{ height: '100%', width: '100%' }}>
             <AgGridReact
               rowData={bills}
               columnDefs={columnDefs}
               pagination={true}
+              domLayout='autoHeight'
             />
           </div>
         </Box>
       </Box>
     </Container>
   );
-}
+};

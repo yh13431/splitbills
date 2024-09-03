@@ -62,15 +62,15 @@ const router = createBrowserRouter([
         path: "/view-debts",
         element: <ViewDebts />
       },
-      {
-        path: "/register",
-        element: <Register />
-      },
-      {
-        path: "/login",
-        element: <Login />
-      },
     ]
+  },
+  {
+    path: "/register",
+    element: <Register />
+  },
+  {
+    path: "/login",
+    element: <Login />
   },
 ]);
 

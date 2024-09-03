@@ -50,9 +50,17 @@ export default function CreateGroup() {
   };
 
   return (
-    <Container>
-      <Box style={{ marginTop: '10px' }}>
-        <Typography variant="h4" gutterBottom>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 4,
+          p: 3,
+          boxShadow: 3,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+        }}
+      >
+        <Typography variant="h4" component="h1" gutterBottom align="center">
           Create Group
         </Typography>
         <form onSubmit={formik.handleSubmit}>
@@ -67,8 +75,14 @@ export default function CreateGroup() {
             fullWidth
             margin="normal"
           />
-          <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>
-            Create Group
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Create
           </Button>
         </form>
       </Box>

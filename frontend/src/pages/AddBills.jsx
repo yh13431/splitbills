@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Container, Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl, Grid } from '@mui/material';
 import { useFormik } from 'formik';
 import CustomSnackbar from '../components/CustomSnackbar';
 import * as Yup from 'yup';
@@ -101,10 +101,18 @@ export default function AddBills() {
   };
 
   return (
-    <Container>
-      <Box style={{ marginTop: '10px' }}>
-        <Typography variant="h4" gutterBottom>
-          Add Bills to Group
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 4,
+          p: 3,
+          boxShadow: 3,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+        }}
+      >
+        <Typography variant="h5" component="h1" align="center" gutterBottom>
+          Add Bill
         </Typography>
         <form onSubmit={formik.handleSubmit}>
           <TextField
@@ -117,6 +125,7 @@ export default function AddBills() {
             helperText={formik.touched.name && formik.errors.name}
             fullWidth
             margin="normal"
+            variant="outlined"
           />
           <TextField
             label="Price"
@@ -128,17 +137,18 @@ export default function AddBills() {
             helperText={formik.touched.price && formik.errors.price}
             fullWidth
             margin="normal"
+            variant="outlined"
             type="number"
           />
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Recipient User</InputLabel>
+          <FormControl fullWidth margin="normal" variant="outlined">
+            <InputLabel>Recipient</InputLabel>
             <Select
-              label="Recipient User"
               name="recipientUserId"
               value={formik.values.recipientUserId}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.recipientUserId && Boolean(formik.errors.recipientUserId)}
+              label="Recipient"
             >
               {users.map(user => (
                 <MenuItem key={user.id} value={user.id}>
@@ -147,11 +157,19 @@ export default function AddBills() {
               ))}
             </Select>
             {formik.touched.recipientUserId && formik.errors.recipientUserId && (
-              <Typography color="error" variant="body2">{formik.errors.recipientUserId}</Typography>
+              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                {formik.errors.recipientUserId}
+              </Typography>
             )}
           </FormControl>
-          <Button variant="contained" color="primary" type="submit" style={{ marginTop: '10px' }}>
-            Add Bill
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Add
           </Button>
         </form>
       </Box>
