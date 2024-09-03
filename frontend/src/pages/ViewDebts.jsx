@@ -228,7 +228,6 @@ export default function ViewDebts() {
         ))
       )}
 
-      {/* Section for bills where other users owe money to the current user */}
       <Typography variant="h4" sx={{ marginTop: 4 }}>
         <i className="fas fa-hand-holding-usd" style={{ marginRight: 8 }} />
         Money Owed to Me
