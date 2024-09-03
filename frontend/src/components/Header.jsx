@@ -18,6 +18,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem('authData');
     navigate('/');
+    window.location.reload(); 
   };
 
   return (

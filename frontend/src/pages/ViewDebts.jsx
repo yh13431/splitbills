@@ -4,6 +4,7 @@ import { Container, Typography, Card, CardContent, List, ListItem, Button, Box, 
 export default function ViewDebts() {
   const [debts, setDebts] = useState({});
   const [groupNames, setGroupNames] = useState({});
+  const [owedToMe, setOwedToMe] = useState({});
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -121,26 +122,39 @@ export default function ViewDebts() {
     const groupIds = await fetchUserGroups();
     const debtsByGroup = {};
     const namesByGroup = {};
+    const owedToMeByGroup = {};
 
     for (const groupId of groupIds) {
       const bills = await fetchBills(groupId);
       const groupName = await fetchGroupName(groupId);
       const userDebts = {};
+      const owedToMe = {};
 
-      const filteredBills = bills.filter(bill => bill.userId === getUserId());
-      
-      filteredBills.forEach(bill => {
+      bills.forEach(bill => {
         const amountPerUser = (bill.price * bill.quantity);
-        userDebts[bill.userId] = (userDebts[bill.userId] || 0) + amountPerUser;
+
+        if (bill.userId === getUserId()) {
+          userDebts[bill.userId] = (userDebts[bill.userId] || 0) + amountPerUser;
+        }
+
+        if (bill.recipientUserId === getUserId()) {
+          owedToMe[bill.userId] = (owedToMe[bill.userId] || 0) + amountPerUser;
+        }
       });
 
-      if (filteredBills.length > 0) {
-        debtsByGroup[groupId] = { bills: filteredBills, userDebts };
-        namesByGroup[groupId] = groupName;
+      if (Object.keys(userDebts).length > 0) {
+        debtsByGroup[groupId] = { bills, userDebts };
       }
+
+      if (Object.keys(owedToMe).length > 0) {
+        owedToMeByGroup[groupId] = { bills, owedToMe };
+      }
+
+      namesByGroup[groupId] = groupName;
     }
 
     setDebts(debtsByGroup);
+    setOwedToMe(owedToMeByGroup);
     setGroupNames(namesByGroup);
   };
 
@@ -204,6 +218,63 @@ export default function ViewDebts() {
                       >
                         Delete Bill
                         <i className="fas fa-trash-alt" style={{ marginLeft: 8 }} />
+                      </Button>
+                    </Box>
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        ))
+      )}
+
+      {/* Section for bills where other users owe money to the current user */}
+      <Typography variant="h4" sx={{ marginTop: 4 }}>
+        <i className="fas fa-hand-holding-usd" style={{ marginRight: 8 }} />
+        Money Owed to Me
+      </Typography>
+      {Object.keys(owedToMe).length === 0 ? (
+        <Typography variant="body1" sx={{ marginTop: 2 }}>
+          <i className="fas fa-check-circle" style={{ marginRight: 8 }} />
+          No one owes me money!
+        </Typography>
+      ) : (
+        Object.entries(owedToMe).map(([groupId, { bills }]) => (
+          <Card key={groupId} sx={{ marginTop: 3, boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                <i className="fas fa-users" style={{ marginRight: 8 }} />
+                {groupNames[groupId]}
+              </Typography>
+              <List>
+                {bills.map(bill => (
+                  <ListItem
+                    key={bill.id}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingY: 2 }}
+                  >
+                    <Stack spacing={1} sx={{ flex: 1 }}>
+                      <Typography variant="body1">
+                        <i className="fas fa-receipt" style={{ marginRight: 8 }} />
+                        {bill.name}
+                      </Typography>
+                      <Typography variant="body1">
+                        <i className="fas fa-dollar-sign" style={{ marginRight: 8 }} />
+                        ${bill.price}
+                      </Typography>
+                      <Typography variant="body1">
+                        <i className="fas fa-user" style={{ marginRight: 8 }} />
+                        {bill.recipientUserName}
+                      </Typography>
+                    </Stack>
+                    <Box>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ marginRight: 1 }}
+                        onClick={() => handleGoToGroup(groupId)}
+                      >
+                        Go to Group
+                        <i className="fas fa-arrow-right" style={{ marginLeft: 8 }} />
                       </Button>
                     </Box>
                   </ListItem>
