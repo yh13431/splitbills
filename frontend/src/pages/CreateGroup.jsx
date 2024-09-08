@@ -11,6 +11,7 @@ const validationSchema = Yup.object({
 
 export default function CreateGroup() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   const getAuthToken = () => {
@@ -37,13 +38,36 @@ export default function CreateGroup() {
           throw new Error('Failed to create group');
         }
         const data = await response.json();
+
+        // Upload file after group creation
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append('file', selectedFile);
+
+          const uploadResponse = await fetch(`http://localhost:8080/s3bucketstorage/splitbillsbucket/groups/${data.id}/upload`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${getAuthToken()}`
+            },
+            body: formData
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error('File upload failed');
+          }
+        }
+
         setSnackbar({ open: true, message: 'Group created successfully', severity: 'success' });
         navigate(`/add-users/${data.id}`);
       } catch (error) {
-        setSnackbar({ open: true, message: 'Failed to create group', severity: 'error' });
+        setSnackbar({ open: true, message: error.message || 'Failed to create group', severity: 'error' });
       }
     }
   });
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
 
   const handleCloseSnackbar = () => {
     setSnackbar({ open: false, message: '', severity: '' });
@@ -75,6 +99,20 @@ export default function CreateGroup() {
             fullWidth
             margin="normal"
           />
+          <Button
+            variant="contained"
+            component="label"
+            fullWidth
+            sx={{ mt: 2, mb: 2 }}
+          >
+            Upload Group Image
+            <input
+              type="file"
+              hidden
+              onChange={handleFileChange}
+            />
+          </Button>
+
           <Button
             variant="contained"
             color="primary"

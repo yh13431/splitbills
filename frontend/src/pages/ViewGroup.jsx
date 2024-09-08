@@ -12,6 +12,7 @@ export default function ViewGroup() {
   const [bills, setBills] = useState([]);
   const [users, setUsers] = useState({});
   const [groupUsers, setGroupUsers] = useState([]);
+  const [groupImageUrl, setGroupImageUrl] = useState('');
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -36,6 +37,34 @@ export default function ViewGroup() {
       groupData.users.forEach(userId => fetchUserDetails(userId));
     } catch (error) {
       console.error('Error fetching group details:', error.message);
+    }
+  };
+
+  const fetchGroupImage = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/s3bucketstorage/splitbillsbucket/groups/${id}/files`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch group image');
+      }
+      const data = await response.text();
+      try {
+        const urls = JSON.parse(data);
+        if (Array.isArray(urls) && urls.length > 0) {
+          setGroupImageUrl(urls[0]);
+        } else {
+          console.error('Unexpected data format:', urls);
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+
+    } catch (error) {
+      console.error('Error fetching group image:', error);
     }
   };
 
@@ -195,6 +224,7 @@ export default function ViewGroup() {
   useEffect(() => {
     fetchGroupDetails();
     fetchBills();
+    fetchGroupImage();
   }, [id]);
 
   return (
@@ -204,6 +234,15 @@ export default function ViewGroup() {
           <i className="fas fa-money-bill-wave" style={{ marginRight: 8 }}></i>
           {groupName}
         </Typography>
+        {groupImageUrl && (
+          <Box sx={{ textAlign: 'center', marginBottom: 2 }}>
+            <img
+              src={groupImageUrl}
+              alt={`${groupName} Image`}
+              style={{ maxWidth: '40%', height: 'auto' }}
+            />
+          </Box>
+        )}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
           <Box>
             <Button
