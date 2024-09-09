@@ -8,8 +8,12 @@ import com.splitbills.backend.model.User;
 import com.splitbills.backend.repository.GroupRepository;
 import com.splitbills.backend.repository.UserRepository;
 
+import jakarta.mail.MessagingException;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class GroupService {
@@ -19,6 +23,9 @@ public class GroupService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public List<Group> getAllGroups() {
         return groupRepository.findAll();
@@ -50,13 +57,26 @@ public class GroupService {
     }
 
     public Group addUserToGroup(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-    
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> new RuntimeException("Group not found"));
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
         group.getUsers().add(user);
-        user.getGroups().add(group); 
-        userRepository.save(user); 
-    
+        user.getGroups().add(group);
+        userRepository.save(user);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("username", user.getUsername());
+        variables.put("groupName", group.getName());
+
+        String template = "userAddedToGroup.html";
+        String subject = "Welcome to Your New Group!";
+        try {
+            emailService.sendHtmlEmail(user.getEmail(), subject, variables, template);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return groupRepository.save(group);
     }
     

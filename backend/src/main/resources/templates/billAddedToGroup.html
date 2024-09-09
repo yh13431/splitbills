@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New Bill Added</title>
+</head>
+<body>
+    <p>Hi <strong th:text="${username}"></strong>,</p>
+
+    <p>We wanted to let you know that a new bill has been added to the group '<strong th:text="${groupName}"></strong>'.</p>
+
+    <p><b>Bill Details:</b></p>
+    <ul>
+        <li><b>Group Name:</b> <strong th:text="${groupName}"></strong></li>
+        <li><b>Bill Name:</b> <strong th:text="${billName}"></strong></li>
+        <li><b>Amount:</b> <strong th:text="${billAmount}"></strong></li>
+        <li><b>Receive From:</b> <strong th:text="${recipientUsername}"></strong></li>
+    </ul>
+
+    <p>In this group, you can track and manage shared expenses. We encourage you to check out the group's page to see what's new and get involved.</p>
+
+    <p>If you have any questions or need assistance, feel free to reach out to us.</p>
+
+    <p>Best regards,<br>The SplitBills Team</p>
+</body>
+</html>
