@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, TextField } from '@mui/material';
 import { useFormik } from 'formik';
-import CustomSnackbar from '../components/CustomSnackbar';
+import LoadingScreen from '../components/LoadingScreen';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,8 +10,9 @@ const validationSchema = Yup.object({
 });
 
 export default function CreateGroup() {
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+  const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [navigateAfterLoading, setNavigateAfterLoading] = useState('');
   const navigate = useNavigate();
 
   const getAuthToken = () => {
@@ -24,7 +25,9 @@ export default function CreateGroup() {
       name: ''
     },
     validationSchema: validationSchema,
+    validateOnChange: true,
     onSubmit: async (values) => {
+      setLoading(true);
       try {
         const response = await fetch(`http://localhost:8080/api/groups`, {
           method: 'POST',
@@ -39,7 +42,6 @@ export default function CreateGroup() {
         }
         const data = await response.json();
 
-        // Upload file after group creation
         if (selectedFile) {
           const formData = new FormData();
           formData.append('file', selectedFile);
@@ -57,10 +59,11 @@ export default function CreateGroup() {
           }
         }
 
-        setSnackbar({ open: true, message: 'Group created successfully', severity: 'success' });
-        navigate(`/add-users/${data.id}`);
+        setNavigateAfterLoading(`/add-users/${data.id}`);
       } catch (error) {
-        setSnackbar({ open: true, message: error.message || 'Failed to create group', severity: 'error' });
+        console.error(error.message || 'Failed to create group');
+      } finally {
+        setLoading(false);
       }
     }
   });
@@ -69,9 +72,12 @@ export default function CreateGroup() {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ open: false, message: '', severity: '' });
-  };
+  useEffect(() => {
+    if (!loading && navigateAfterLoading) {
+      navigate(navigateAfterLoading);
+      setNavigateAfterLoading('');
+    }
+  }, [loading, navigateAfterLoading, navigate]);
 
   return (
     <Container maxWidth="sm">
@@ -112,24 +118,26 @@ export default function CreateGroup() {
               onChange={handleFileChange}
             />
           </Button>
-
           <Button
             variant="contained"
             color="primary"
             type="submit"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 2,
+              backgroundColor: formik.isValid && formik.dirty ? 'primary.main' : 'grey.400',
+              '&:hover': {
+                backgroundColor: formik.isValid && formik.dirty ? 'primary.dark' : 'grey.500',
+              },
+              cursor: formik.isValid && formik.dirty ? 'pointer' : 'not-allowed'
+            }}
+            disabled={!formik.isValid || !formik.dirty}
           >
             Create
           </Button>
         </form>
       </Box>
-      <CustomSnackbar 
-        open={snackbar.open} 
-        onClose={handleCloseSnackbar} 
-        message={snackbar.message} 
-        severity={snackbar.severity} 
-      />
+      {loading && <LoadingScreen />}
     </Container>
   );
 }

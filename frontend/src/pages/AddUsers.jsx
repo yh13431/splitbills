@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Box, Typography, FormControl, InputLabel, Select, MenuItem, Chip, Button, Snackbar, Alert } from '@mui/material';
+import { Container, Box, Typography, FormControl, InputLabel, Select, MenuItem, Chip, Button } from '@mui/material';
+import CustomSnackbar from '../components/CustomSnackbar';
+import LoadingScreen from '../components/LoadingScreen'; 
 
 export default function AddUsers() {
   const { id } = useParams();
@@ -8,6 +10,7 @@ export default function AddUsers() {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [groupName, setGroupName] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -16,7 +19,13 @@ export default function AddUsers() {
     return authData ? authData.token : '';
   };
 
+  const getCurrentUserId = () => {
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    return authData ? authData.user : '';
+  };
+
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const response = await fetch('http://localhost:8080/api/users', {
         method: 'GET',
@@ -30,11 +39,14 @@ export default function AddUsers() {
       const data = await response.json();
       setAllUsers(data);
     } catch (error) {
-      console.error('Error fetching users:', error.message);
+      setError('Error fetching users: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchGroupDetails = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`http://localhost:8080/api/groups/${id}`, {
         method: 'GET',
@@ -48,22 +60,27 @@ export default function AddUsers() {
       const data = await response.json();
       setGroupName(data.name);
     } catch (error) {
-      console.error('Error fetching group details:', error.message);
+      setError('Error fetching group details: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUsers();
     fetchGroupDetails();
-  }, []);
+  }, [id]);
 
   const handleAddUser = async () => {
-    if (selectedUsers.length < 2) {
-      setError('At least 2 users must be added to the group.');
+    const currentUserId = getCurrentUserId();
+    if (selectedUsers.length < 2 || !selectedUsers.includes(currentUserId)) {
+      setError('You must add yourself and at least one other user to the group.');
       return;
     }
 
+    setLoading(true);
     try {
+      console.log('Selected Users:', selectedUsers)
       for (const userId of selectedUsers) {
         const response = await fetch(`http://localhost:8080/api/groups/${id}/users/${userId}`, {
           method: 'POST',
@@ -78,14 +95,17 @@ export default function AddUsers() {
       setSuccess('Users added successfully!');
       setError('');
       setSelectedUsers([]);
-      navigate(`/view-group/${id}`);
+      setTimeout(() => navigate(`/view-group/${id}`), 1000);
     } catch (error) {
       setError('Error adding users: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChange = (event) => {
-    setSelectedUsers(event.target.value);
+    const value = event.target.value;
+    setSelectedUsers(value);
   };
 
   return (
@@ -103,7 +123,9 @@ export default function AddUsers() {
           Add Users to {groupName ? `${groupName}` : 'Group'}
         </Typography>
         <FormControl fullWidth margin="normal" variant="outlined">
-          <InputLabel id="user-select-label">Select Users</InputLabel>
+          <InputLabel id="user-select-label">
+            Select Users
+          </InputLabel>
           <Select
             labelId="user-select-label"
             multiple
@@ -130,21 +152,32 @@ export default function AddUsers() {
           color="primary"
           onClick={handleAddUser}
           fullWidth
-          sx={{ mt: 2 }}
+          sx={{
+            mt: 2,
+            backgroundColor: selectedUsers.length > 0 ? 'primary.main' : 'grey.400',
+            '&:hover': {
+              backgroundColor: selectedUsers.length > 0 ? 'primary.dark' : 'grey.500',
+            },
+            cursor: selectedUsers.length > 0 ? 'pointer' : 'not-allowed'
+          }}
+          disabled={selectedUsers.length === 0}
         >
           Add Users
         </Button>
       </Box>
-      <Snackbar open={Boolean(error)} autoHideDuration={6000} onClose={() => setError('')}>
-        <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
-      <Snackbar open={Boolean(success)} autoHideDuration={6000} onClose={() => setSuccess('')}>
-        <Alert onClose={() => setSuccess('')} severity="success" sx={{ width: '100%' }}>
-          {success}
-        </Alert>
-      </Snackbar>
+      {loading && <LoadingScreen />}
+      <CustomSnackbar
+        open={Boolean(error)}
+        onClose={() => setError('')}
+        message={error}
+        severity="error"
+      />
+      <CustomSnackbar
+        open={Boolean(success)}
+        onClose={() => setSuccess('')}
+        message={success}
+        severity="success"
+      />
     </Container>
   );
 }

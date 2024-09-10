@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl, Grid } from '@mui/material';
+import { Container, Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl, Grid, CircularProgress, Backdrop, Paper } from '@mui/material';
 import { useFormik } from 'formik';
 import CustomSnackbar from '../components/CustomSnackbar';
 import * as Yup from 'yup';
@@ -17,6 +17,7 @@ export default function AddBills() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
   const [groupUsers, setGroupUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -32,6 +33,7 @@ export default function AddBills() {
 
   useEffect(() => {
     const fetchGroupAndUsers = async () => {
+      setLoading(true);
       try {
         const groupResponse = await fetch(`http://localhost:8080/api/groups/${id}`, {
           method: 'GET',
@@ -59,6 +61,8 @@ export default function AddBills() {
         setUsers(filteredUsers);
       } catch (error) {
         console.error('Error fetching data:', error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -74,6 +78,7 @@ export default function AddBills() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
+      setLoading(true);
       try {
         const response = await fetch(`http://localhost:8080/api/groups/${id}/bills`, {
           method: 'POST',
@@ -92,6 +97,8 @@ export default function AddBills() {
         navigate(`/view-group/${id}`);
       } catch (error) {
         setSnackbar({ open: true, message: 'Failed to add bill', severity: 'error' });
+      } finally {
+        setLoading(false);
       }
     }
   });
@@ -102,77 +109,79 @@ export default function AddBills() {
 
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 4,
-          p: 3,
-          boxShadow: 3,
-          borderRadius: 2,
-          backgroundColor: 'background.paper',
-        }}
-      >
+      <Backdrop open={loading} style={{ zIndex: 1200 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Paper elevation={3} sx={{ padding: 3, mt: 4 }}>
         <Typography variant="h5" component="h1" align="center" gutterBottom>
           Add Bill
         </Typography>
         <form onSubmit={formik.handleSubmit}>
-          <TextField
-            label="Bill Name"
-            name="name"
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.name && Boolean(formik.errors.name)}
-            helperText={formik.touched.name && formik.errors.name}
-            fullWidth
-            margin="normal"
-            variant="outlined"
-          />
-          <TextField
-            label="Price"
-            name="price"
-            value={formik.values.price}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.price && Boolean(formik.errors.price)}
-            helperText={formik.touched.price && formik.errors.price}
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            type="number"
-          />
-          <FormControl fullWidth margin="normal" variant="outlined">
-            <InputLabel>Recipient</InputLabel>
-            <Select
-              name="recipientUserId"
-              value={formik.values.recipientUserId}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.recipientUserId && Boolean(formik.errors.recipientUserId)}
-              label="Recipient"
-            >
-              {users.map(user => (
-                <MenuItem key={user.id} value={user.id}>
-                  {user.username}
-                </MenuItem>
-              ))}
-            </Select>
-            {formik.touched.recipientUserId && formik.errors.recipientUserId && (
-              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                {formik.errors.recipientUserId}
-              </Typography>
-            )}
-          </FormControl>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            Add
-          </Button>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Bill Name"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+                fullWidth
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Price"
+                name="price"
+                value={formik.values.price}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.price && Boolean(formik.errors.price)}
+                helperText={formik.touched.price && formik.errors.price}
+                fullWidth
+                variant="outlined"
+                type="number"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Recipient</InputLabel>
+                <Select
+                  name="recipientUserId"
+                  value={formik.values.recipientUserId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.recipientUserId && Boolean(formik.errors.recipientUserId)}
+                  label="Recipient"
+                >
+                  {users.map(user => (
+                    <MenuItem key={user.id} value={user.id}>
+                      {user.username}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formik.touched.recipientUserId && formik.errors.recipientUserId && (
+                  <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                    {formik.errors.recipientUserId}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+              >
+                Add
+              </Button>
+            </Grid>
+          </Grid>
         </form>
-      </Box>
+      </Paper>
       <CustomSnackbar 
         open={snackbar.open} 
         onClose={handleCloseSnackbar} 

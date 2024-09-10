@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Card, CardContent, Grid } from '@mui/material';
+import { Container, Typography, Button, Card, CardContent, Grid, Box, TextField, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import exampleImage from '../assets/istockphoto-678605672-612x612.jpg';
 
 export default function Home() {
   const [groups, setGroups] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   const getAuthToken = () => {
@@ -31,6 +34,7 @@ export default function Home() {
       const userId = getUserId();
       const userGroups = data.filter(group => group.users.includes(userId));
       setGroups(userGroups);
+      setFilteredGroups(userGroups);
     } catch (error) {
       console.error('Error fetching groups:', error.message);
     }
@@ -53,24 +57,82 @@ export default function Home() {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+    const filtered = groups.filter(group =>
+      group.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setFilteredGroups(filtered);
+  };
+
   useEffect(() => {
     fetchGroups();
   }, []);
 
   return (
     <Container>
-      {groups.length === 0 ? (
+      <Box>
+      <Paper elevation={2} style={{ padding: '40px', marginBottom: '5%', marginTop: '5%', borderRadius: '8px' }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box flex={1} paddingRight={2}>
+            <Typography variant="h1" gutterBottom>
+              SplitBills
+            </Typography>
+            <Typography variant="h5" color="textSecondary" paragraph>
+              Effortlessly add users to groups and split bills. Stay organized and manage expenses with ease.
+            </Typography>
+            <Box display="flex" justifyContent="flex-start" mb={3}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate('/create-group')}
+                style={{ marginRight: '10px' }}
+              >
+                Create New Group
+              </Button>
+            </Box>
+          </Box>
+          <Box flex={1} display="flex" justifyContent="center">
+            <img
+              src={exampleImage}
+              alt="Background"
+              style={{
+                width: '100%',
+                height: 'auto',
+                borderRadius: '8px',
+                objectFit: 'cover',
+              }}
+            />
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
+      <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
+        <TextField
+          label="Search Groups"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={handleSearchChange}
+          style={{ maxWidth: '400px' }}
+        />
+      </Box>
+      {filteredGroups.length === 0 ? (
         <Typography variant="body1" align="center" color="textSecondary" style={{ marginTop: '20px' }}>
           No groups available
         </Typography>
       ) : (
         <Grid container spacing={3} style={{ marginTop: '20px' }}>
-          {groups.map((group) => (
+          {filteredGroups.map((group) => (
             <Grid item xs={12} sm={6} md={4} key={group.id}>
               <Card elevation={3} style={{ borderRadius: '8px', overflow: 'hidden' }}>
                 <CardContent>
                   <Typography variant="h6" style={{ fontWeight: 600 }}>
                     {group.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {group.users.length} users
                   </Typography>
                   <div style={{ marginTop: '20px' }}>
                     <Button
@@ -96,5 +158,5 @@ export default function Home() {
         </Grid>
       )}
     </Container>
-  )
+  );
 }
