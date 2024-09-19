@@ -8,7 +8,7 @@ import CustomSnackbar from '../components/CustomSnackbar';
 const Login = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
     const navigate = useNavigate();
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost';
+    const apiUrl = process.env.REACT_APP_API_URL
     const formik = useFormik({
         initialValues: {
             username: "",
