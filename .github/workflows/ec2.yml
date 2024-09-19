@@ -2,7 +2,7 @@ name: AWS-EC2 Instance CD
 
 on:
   workflow_run:
-    workflows: ["Node.js CI"]
+    workflows: ["CI/CD Pipeline"]
     types: [completed]
 
 jobs:
