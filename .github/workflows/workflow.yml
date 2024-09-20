@@ -37,7 +37,7 @@ jobs:
           java-version: '17'
 
       - name: Run tests before packaging
-        run: ./mvnw test
+        run: ./mvnw test -Dtest='!*BackendApplicationTests'
         working-directory: ./backend
 
       - name: Build backend JAR

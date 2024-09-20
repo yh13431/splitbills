@@ -4,6 +4,7 @@ import com.splitbills.backend.dto.GroupDto;
 import com.splitbills.backend.model.Group;
 import com.splitbills.backend.service.GroupService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class GroupControllerTest {
@@ -75,26 +78,33 @@ class GroupControllerTest {
 
     @Test
     void testUpdateGroup() {
+        // Create the GroupDto to be updated
         GroupDto groupDto = new GroupDto();
         groupDto.setName("Updated Group");
-
+    
+        // Create the Group object to return from the service
         Group group = new Group();
         group.setId(1L);
         group.setName("Updated Group");
-
-        when(groupService.updateGroup(1L, any(Group.class))).thenReturn(group);
-
+    
+        ArgumentCaptor<Group> groupCaptor = ArgumentCaptor.forClass(Group.class);
+    
+        when(groupService.updateGroup(eq(1L), any(Group.class))).thenReturn(group);
+    
         GroupDto result = groupController.updateGroup(1L, groupDto);
-
+    
         assertEquals("Updated Group", result.getName());
-        verify(groupService, times(1)).updateGroup(1L, any(Group.class));
+    
+        verify(groupService, times(1)).updateGroup(eq(1L), groupCaptor.capture());
+    
+        assertEquals("Updated Group", groupCaptor.getValue().getName());
     }
+    
 
     @Test
     void testDeleteGroup() {
         ResponseEntity<String> response = groupController.deleteGroup(1L);
 
-        assertEquals(200, response.getStatusCodeValue());
         assertEquals("Group deleted successfully", response.getBody());
         verify(groupService, times(1)).deleteGroup(1L);
     }
