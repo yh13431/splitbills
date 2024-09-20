@@ -36,6 +36,10 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Run tests before packaging
+        run: ./mvnw clean test
+        working-directory: ./backend
+
       - name: Build backend JAR
         run: ./mvnw clean package -DskipTests
         working-directory: ./backend
