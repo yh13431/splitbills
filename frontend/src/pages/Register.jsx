@@ -8,7 +8,6 @@ import CustomSnackbar from '../components/CustomSnackbar';
 const Register = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
     const navigate = useNavigate();
-    const apiUrl = process.env.REACT_APP_API_URL
 
     const formik = useFormik({
         initialValues: {
@@ -18,7 +17,7 @@ const Register = () => {
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                await axios.post(`${apiUrl}:8080/auth/signup`, values);
+                await axios.post(`http://localhost:8080/auth/signup`, values);
                 navigate("/");
             } catch (err) {
                 let errorMessage = "An unexpected error occurred";

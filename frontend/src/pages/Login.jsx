@@ -8,7 +8,6 @@ import CustomSnackbar from '../components/CustomSnackbar';
 const Login = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
     const navigate = useNavigate();
-    const apiUrl = process.env.REACT_APP_API_URL
     const formik = useFormik({
         initialValues: {
             username: "",
@@ -16,7 +15,7 @@ const Login = () => {
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                const response = await axios.post(`${apiUrl}:8080/auth/login`, values);
+                const response = await axios.post(`http://localhost:8080/auth/login`, values);
                 const payload = {
                     token: response.data.token,   
                     user: response.data.userId      
