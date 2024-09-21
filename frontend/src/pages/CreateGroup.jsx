@@ -12,6 +12,7 @@ const validationSchema = Yup.object({
 export default function CreateGroup() {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState(''); // Add state for file name
   const [navigateAfterLoading, setNavigateAfterLoading] = useState('');
   const navigate = useNavigate();
 
@@ -69,7 +70,9 @@ export default function CreateGroup() {
   });
 
   const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    setFileName(file ? file.name : '');
   };
 
   useEffect(() => {
@@ -118,6 +121,11 @@ export default function CreateGroup() {
               onChange={handleFileChange}
             />
           </Button>
+          {fileName && (
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+              Selected file: {fileName}
+            </Typography>
+          )}
           <Button
             variant="contained"
             color="primary"

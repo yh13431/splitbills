@@ -17,7 +17,12 @@ const Register = () => {
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                await axios.post(`http://localhost:8080/auth/signup`, values);
+                const response = await axios.post(`http://localhost:8080/auth/signup`, values);
+                const payload = {
+                    token: response.data.token,   
+                    user: response.data.userId      
+                };
+                localStorage.setItem('authData', JSON.stringify(payload));
                 navigate("/");
             } catch (err) {
                 let errorMessage = "An unexpected error occurred";

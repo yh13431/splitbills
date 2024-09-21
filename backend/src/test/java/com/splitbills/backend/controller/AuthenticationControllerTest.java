@@ -44,12 +44,24 @@ public class AuthenticationControllerTest {
         registeredUser.setId(1L);
         registeredUser.setEmail("test@example.com");
 
+        String jwtToken = "jwt.token.here";
+        Long expiresIn = 3600L; 
+
         when(authenticationService.signup(any(RegisterUserDto.class))).thenReturn(registeredUser);
+        when(jwtService.generateToken(registeredUser)).thenReturn(jwtToken);
+        when(jwtService.getExpirationTime()).thenReturn(expiresIn);
 
-        ResponseEntity<User> response = authenticationController.register(registerUserDto);
+        ResponseEntity<LoginResponse> response = authenticationController.register(registerUserDto);
 
-        assertThat(response.getBody()).isEqualTo(registeredUser);
+        LoginResponse loginResponse = response.getBody();
+        assertThat(loginResponse).isNotNull();
+        assertThat(loginResponse.getToken()).isEqualTo(jwtToken);
+        assertThat(loginResponse.getExpiresIn()).isEqualTo(expiresIn);
+        assertThat(loginResponse.getUserId()).isEqualTo(registeredUser.getId());
+
         verify(authenticationService, times(1)).signup(registerUserDto);
+        verify(jwtService, times(1)).generateToken(registeredUser);
+        verify(jwtService, times(1)).getExpirationTime();
     }
 
     @Test

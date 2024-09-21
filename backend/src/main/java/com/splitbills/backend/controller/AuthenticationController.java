@@ -24,12 +24,23 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<LoginResponse> register(@RequestBody RegisterUserDto registerUserDto) {
         User registeredUser = authenticationService.signup(registerUserDto);
 
-        return ResponseEntity.ok(registeredUser);
-    }
+        // Generate JWT token for the registered user
+        String jwtToken = jwtService.generateToken(registeredUser);
+        Long expiresIn = jwtService.getExpirationTime();
+        Long userId = registeredUser.getId();
 
+        // Prepare the response payload
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setExpiresIn(expiresIn);
+        loginResponse.setUserId(userId);
+
+        return ResponseEntity.ok(loginResponse);
+    }
+    
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
