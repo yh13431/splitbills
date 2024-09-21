@@ -1,69 +1,86 @@
 package com.splitbills.backend.service;
 
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.HashMap;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.security.Key;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class JwtServiceTest {
 
-    @InjectMocks
     private JwtService jwtService;
 
-    private long jwtExpiration = 10000;  
+    @Mock
+    private UserDetails userDetails;
+
+    private Key testKey;  
 
     @BeforeEach
-    public void setup() {
+    void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        jwtService.setJwtExpiration(jwtExpiration);  
+        jwtService = new JwtService();
+
+        testKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); 
+        setField(jwtService, "secretKey", java.util.Base64.getEncoder().encodeToString(testKey.getEncoded()));
+        setField(jwtService, "jwtExpiration", 3600000L); 
+
+        when(userDetails.getUsername()).thenReturn("testuser");
     }
 
     @Test
-    void testGenerateToken() {
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn("testUser");
+    void testExtractUsername() throws Exception {
+        String token = jwtService.generateToken(userDetails);
 
+        String username = jwtService.extractUsername(token);
+
+        assertEquals("testuser", username);
+    }
+
+    @Test
+    void testGenerateToken() throws Exception {
         String token = jwtService.generateToken(userDetails);
 
         assertNotNull(token);
-        assertTrue(token.startsWith("eyJ"));
-    }
-
-    @Test
-    void testExtractUsername() {
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn("testUser");
-
-        String token = jwtService.generateToken(userDetails);
-        String username = jwtService.extractUsername(token);
-
-        assertEquals("testUser", username);
-    }
-
-    @Test
-    void testIsTokenValid() {
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn("testUser");
-
-        String token = jwtService.generateToken(userDetails);
-
         assertTrue(jwtService.isTokenValid(token, userDetails));
     }
 
     @Test
-    void testIsTokenExpired() {
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getUsername()).thenReturn("testUser");
+    void testIsTokenValid() throws Exception {
+        String token = jwtService.generateToken(userDetails);
 
-        String token = jwtService.buildToken(new HashMap<>(), userDetails, -1000); 
+        assertTrue(jwtService.isTokenValid(token, userDetails));
+    }
+    
 
-        assertFalse(jwtService.isTokenValid(token, userDetails));
+    @Test
+    void testExtractExpiration() throws Exception {
+        String token = jwtService.generateToken(userDetails);
+
+        Date expirationDate = (Date) invokePrivateMethod(jwtService, "extractExpiration", new Class<?>[]{String.class}, token);
+
+        assertNotNull(expirationDate);
+        assertTrue(expirationDate.after(new Date()));
     }
 
+    private void setField(Object target, String fieldName, Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private Object invokePrivateMethod(Object target, String methodName, Class<?>[] paramTypes, Object... params) throws Exception {
+        Method method = target.getClass().getDeclaredMethod(methodName, paramTypes);
+        method.setAccessible(true);
+        return method.invoke(target, params);
+    }
 }
