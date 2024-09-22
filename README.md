@@ -126,7 +126,8 @@ The application is also containerized using Docker Compose, allowing for easy de
 
 ### :bar_chart: Database ERD
 
-![db erd](https://github.com/user-attachments/assets/2618f97b-1491-4892-b07a-acee85625e6d)
+![Untitled (2)](https://github.com/user-attachments/assets/9c67bb3e-c9ee-40eb-8ec9-c236b31a6770)
+
 
 
 <!-- Getting Started -->
