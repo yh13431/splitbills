@@ -90,13 +90,6 @@ Additionally, the project is set up with a CI pipeline using GitHub Actions, ens
 The application is also containerized using Docker Compose, allowing for easy deployment and scalability.
 
 
-### :bar_chart: Database ERD
-
-![db erd](https://github.com/user-attachments/assets/2618f97b-1491-4892-b07a-acee85625e6d)
-
-
-
-
 <!-- TechStack -->
 ### :space_invader: Tech Stack
 
@@ -130,6 +123,11 @@ The application is also containerized using Docker Compose, allowing for easy de
     <li><a href="https://docs.github.com/en/actions">GitHub Actions</a></li>
   </ul>
 </details>
+
+### :bar_chart: Database ERD
+
+![db erd](https://github.com/user-attachments/assets/2618f97b-1491-4892-b07a-acee85625e6d)
+
 
 <!-- Getting Started -->
 ## 	:toolbox: Getting Started
