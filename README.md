@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="https://github.com/user-attachments/assets/36a6923a-0e28-41ea-8e84-d07e1571a545" alt="bill2" width="300" />
+  <img src="https://github.com/user-attachments/assets/36a6923a-0e28-41ea-8e84-d07e1571a545" alt="bill2" width="150" />
   <h1>SplitBills</h1>
   
   <p>
@@ -40,23 +40,23 @@ The application allows users to create groups and add bills that can be shared a
 ### Video Demos
 
 - **Authentication**: Demonstrates the login process with a Google Account.
-  https://github.com/user-attachments/assets/e81773f3-9030-4d75-8b94-d173d84c7115
-  https://github.com/user-attachments/assets/8c2eaf3f-0c21-47fe-a8b3-2ac787f49e58
+  - [Watch Video 1](https://github.com/user-attachments/assets/e81773f3-9030-4d75-8b94-d173d84c7115)
+  - [Watch Video 2](https://github.com/user-attachments/assets/8c2eaf3f-0c21-47fe-a8b3-2ac787f49e58)
 
 - **Create Group**: Illustrates the process of creating a new group for splitting bills.
-  https://github.com/user-attachments/assets/a269c4bf-0516-4d23-882a-671786c47588
+  - [Watch Video](https://github.com/user-attachments/assets/a269c4bf-0516-4d23-882a-671786c47588)
 
 - **Create Bill**: Shows how to create a new bill in the application.
-  https://github.com/user-attachments/assets/e6784ae2-8c94-49b6-91fe-e555618ebcf0
+  - [Watch Video](https://github.com/user-attachments/assets/e6784ae2-8c94-49b6-91fe-e555618ebcf0)
 
 - **Edit Group**: Displays how to edit group details after creation.
-  https://github.com/user-attachments/assets/812a4c31-29cd-46c1-8617-e1a594a31690
+  - [Watch Video](https://github.com/user-attachments/assets/812a4c31-29cd-46c1-8617-e1a594a31690)
 
 - **Update/Delete Bill**: Explains how to update or delete an existing bill.
-  https://github.com/user-attachments/assets/8158f911-1636-42cc-89e0-835c47361f86
+  - [Watch Video](https://github.com/user-attachments/assets/8158f911-1636-42cc-89e0-835c47361f86)
 
 - **View Debts**: Shows how users can view their debts and what is owed to them.
-  https://github.com/user-attachments/assets/b320eb74-2f41-4d06-9677-458f89358875
+  - [Watch Video](https://github.com/user-attachments/assets/b320eb74-2f41-4d06-9677-458f89358875)
 
 The app is designed to provide a user-friendly interface for tracking who owes what, ensuring that managing shared expenses is hassle-free. Users can view detailed information about each bill, including amounts and recipients, making it easier to settle up with friends.
 
