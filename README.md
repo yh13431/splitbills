@@ -37,6 +37,8 @@ Users must first log in or register, then they can interact with the web applica
 
 The application allows users to create groups and add bills that can be shared among group members. Each user can see what they owe and what others owe them, facilitating clear financial communication.
 
+Additionally, the project is set up with a CI pipeline using GitHub Actions, ensuring that code is continuously integrated and tested with every commit. The application is also containerized using Docker Compose, allowing for easy deployment and scalability.
+
 ### Video Demos
 
 - **Authentication**: Demonstrates the login process with a Google Account.
@@ -85,7 +87,8 @@ https://github.com/user-attachments/assets/680392df-ebdc-41a3-b007-6c1cbc47d3b7
 
 
 
-The app is designed to provide a user-friendly interface for tracking who owes what, ensuring that managing shared expenses is hassle-free. Users can view detailed information about each bill, including amounts and recipients, making it easier to settle up with friends.
+The app is designed to provide a user-friendly interface for tracking who owes what, ensuring that managing shared expenses is hassle-free. 
+Users can view detailed information about each bill, including amounts and recipients, making it easier to settle up with friends.
 
 <!-- TechStack -->
 ### :space_invader: Tech Stack
