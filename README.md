@@ -40,23 +40,50 @@ The application allows users to create groups and add bills that can be shared a
 ### Video Demos
 
 - **Authentication**: Demonstrates the login process with a Google Account.
-  - [Watch Video 1](https://github.com/user-attachments/assets/e81773f3-9030-4d75-8b94-d173d84c7115)
-  - [Watch Video 2](https://github.com/user-attachments/assets/8c2eaf3f-0c21-47fe-a8b3-2ac787f49e58)
+
+
+https://github.com/user-attachments/assets/1e605d20-aab9-4822-9f4c-79a30e9f50aa
+
+
+
+
+https://github.com/user-attachments/assets/579c6ddd-a9ae-40e0-b17c-8f1c25af0577
+
 
 - **Create Group**: Illustrates the process of creating a new group for splitting bills.
-  - [Watch Video](https://github.com/user-attachments/assets/a269c4bf-0516-4d23-882a-671786c47588)
+
+
+https://github.com/user-attachments/assets/d51b19ca-d2d6-4abf-87d4-cb1528b4e23b
+
+
 
 - **Create Bill**: Shows how to create a new bill in the application.
-  - [Watch Video](https://github.com/user-attachments/assets/e6784ae2-8c94-49b6-91fe-e555618ebcf0)
+
+
+https://github.com/user-attachments/assets/2e2b3121-1255-402e-9176-ffe4dbc25019
+
+
 
 - **Edit Group**: Displays how to edit group details after creation.
-  - [Watch Video](https://github.com/user-attachments/assets/812a4c31-29cd-46c1-8617-e1a594a31690)
+
+
+https://github.com/user-attachments/assets/ac5ddb19-d9e9-46ce-a7fe-39b511f7d9b4
+
+
 
 - **Update/Delete Bill**: Explains how to update or delete an existing bill.
-  - [Watch Video](https://github.com/user-attachments/assets/8158f911-1636-42cc-89e0-835c47361f86)
+
+
+https://github.com/user-attachments/assets/6c69e593-a6ab-41ba-af8a-d7e60e7e57ad
+
+
 
 - **View Debts**: Shows how users can view their debts and what is owed to them.
-  - [Watch Video](https://github.com/user-attachments/assets/b320eb74-2f41-4d06-9677-458f89358875)
+
+
+https://github.com/user-attachments/assets/680392df-ebdc-41a3-b007-6c1cbc47d3b7
+
+
 
 The app is designed to provide a user-friendly interface for tracking who owes what, ensuring that managing shared expenses is hassle-free. Users can view detailed information about each bill, including amounts and recipients, making it easier to settle up with friends.
 
