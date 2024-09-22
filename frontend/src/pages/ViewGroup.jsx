@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Box, Typography, Button, List, ListItem, ListItemText, CircularProgress } from '@mui/material';
+import { Container, Box, Typography, Button, List, ListItem, ListItemText, CircularProgress, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -14,6 +14,8 @@ export default function ViewGroup() {
   const [groupUsers, setGroupUsers] = useState([]);
   const [groupImageUrl, setGroupImageUrl] = useState('');
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -23,7 +25,6 @@ export default function ViewGroup() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch group details
         const groupResponse = await fetch(`http://localhost:8080/api/groups/${id}`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${getAuthToken()}` },
@@ -33,7 +34,6 @@ export default function ViewGroup() {
         setGroupName(groupData.name);
         setGroupUsers(groupData.users);
 
-        // Fetch group image
         const imageResponse = await fetch(`http://localhost:8080/s3bucketstorage/splitbillsbucket/groups/${id}/files`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${getAuthToken()}` },
@@ -47,7 +47,6 @@ export default function ViewGroup() {
           console.error('Error parsing JSON:', error);
         }
 
-        // Fetch user details
         await Promise.all(groupData.users.map(async (userId) => {
           const userResponse = await fetch(`http://localhost:8080/api/users/${userId}`, {
             method: 'GET',
@@ -58,7 +57,6 @@ export default function ViewGroup() {
           setUsers(prev => ({ ...prev, [userId]: userData.username }));
         }));
 
-        // Fetch bills
         const billsResponse = await fetch(`http://localhost:8080/api/groups/${id}/bills`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${getAuthToken()}` },
@@ -89,6 +87,46 @@ export default function ViewGroup() {
     navigate(`/add-users/${id}`);
   };
 
+  const handleEditGroupName = () => {
+    setEditDialogOpen(true);
+    setNewGroupName(groupName);
+  };
+
+  const handleDialogClose = () => {
+    setEditDialogOpen(false);
+  };
+
+  const handleGroupNameChange = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/groups/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newGroupName }),
+      });
+      if (!response.ok) throw new Error('Failed to update group name');
+      setGroupName(newGroupName);
+      handleDialogClose();
+    } catch (error) {
+      console.error('Error updating group name:', error.message);
+    }
+  };
+
+  const deleteGroup = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/groups/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getAuthToken()}` },
+      });
+      if (!response.ok) throw new Error('Failed to delete group');
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting group:', error.message);
+    }
+  };
+
   const columnDefs = useMemo(() => [
     { headerName: 'Bill Name', field: 'name', sortable: true, filter: true, flex: 1 },
     { headerName: 'Amount', field: 'price', sortable: true, filter: true, flex: 1, valueFormatter: params => `$${params.value.toFixed(2)}` },
@@ -101,9 +139,20 @@ export default function ViewGroup() {
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="contained"
-            color="primary"
             onClick={() => handleUpdateBillClick(params.data.id)}
-            sx={{ marginRight: 1 }}
+            sx={{
+              marginRight: 1,
+              borderRadius: '30px',
+              fontWeight: '500',
+              backgroundColor: '#333',
+              color: '#fff',
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.3s',
+              '&:hover': {
+                backgroundColor: '#444',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              },
+            }}
           >
             Update
           </Button>
@@ -111,6 +160,18 @@ export default function ViewGroup() {
             variant="contained"
             color="secondary"
             onClick={() => deleteBill(params.data.id)}
+            sx={{
+              borderRadius: '30px',
+              fontWeight: '500',
+              backgroundColor: '#d32f2f',
+              color: '#fff',
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.3s',
+              '&:hover': {
+                backgroundColor: '#c62828',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              },
+            }}
           >
             Delete
           </Button>
@@ -144,49 +205,159 @@ export default function ViewGroup() {
             />
           </Box>
         )}
-        <Box sx={{ flexGrow: 1, ml: 6 }}>
+        <Box sx={{ ml: 6 }}>
           <Typography variant="h4" fontWeight={500} gutterBottom>
             {groupName}
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 4 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddUserClick}
-              sx={{ mb: 2 }}
-            >
-              Add User
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddBillClick}
-            >
-              Add Bill
-            </Button>
+          <Box sx={{ display: 'flex', mb: 4, gap: 2 }}>
+              <Button
+                variant="contained"
+                onClick={handleEditGroupName}
+                sx={{
+                  borderRadius: '30px',
+                  fontWeight: '500',
+                  backgroundColor: '#333',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#444',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                Edit Group Name
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleAddUserClick}
+                sx={{
+                  borderRadius: '30px',
+                  fontWeight: '500',
+                  backgroundColor: '#333',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#444',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                Add User
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleAddBillClick}
+                sx={{
+                  borderRadius: '30px',
+                  fontWeight: '500',
+                  backgroundColor: '#333',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#444',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                Add Bill
+              </Button>
+              <Button
+                variant="contained"
+                onClick={deleteGroup}
+                sx={{
+                  borderRadius: '30px',
+                  fontWeight: '500',
+                  backgroundColor: '#d32f2f',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#c62828',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                  },
+                }}
+              >
+                Delete Group
+              </Button>
           </Box>
           <Box sx={{ marginBottom: 2 }}>
             <Typography variant="h6" fontWeight={500} gutterBottom>
               Users
             </Typography>
-            <List dense>
-              {groupUsers.map(userId => (
-                <ListItem key={userId} disableGutters>
-                  <i className="fas fa-user" style={{ marginRight: 8 }} />
-                  <ListItemText primary={users[userId] || 'Loading...'} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, marginBottom: 2 }}>
+              {groupUsers.length > 0 ? (
+                groupUsers.map(userId => (
+                  <Box key={userId} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <i className="fas fa-user" style={{ marginRight: 8 }} />
+                    <Typography variant="body1">{users[userId] || 'Loading...'}</Typography>
+                  </Box>
+                ))
+              ) : (
+                <Typography variant="body1">No users in this group.</Typography>
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>
-      <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
-        <AgGridReact
-          rowData={bills}
-          columnDefs={columnDefs}
-          pagination={true}
-        />
-      </div>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <div className="ag-theme-alpine" style={{ height: 400, width: '100%', marginBottom: '4%' }}>
+          <AgGridReact
+            rowData={bills}
+            columnDefs={columnDefs}
+            pagination={true}
+          />
+        </div>
+      )}
+
+      <Dialog open={editDialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Edit Group Name</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Group Name"
+            type="text"
+            fullWidth
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions sx={{ marginBottom: 2, mr: 2 }}>
+          <Button onClick={handleDialogClose} sx={{
+            borderRadius: '30px',
+            fontWeight: '500',
+            backgroundColor: '#333',
+            color: '#fff',
+            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s',
+            '&:hover': {
+              backgroundColor: '#444',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            },
+          }}>
+            Cancel
+          </Button>
+          <Button onClick={handleGroupNameChange} sx={{
+            borderRadius: '30px',
+            fontWeight: '500',
+            backgroundColor: '#333',
+            color: '#fff',
+            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s',
+            '&:hover': {
+              backgroundColor: '#444',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+            },
+          }}>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

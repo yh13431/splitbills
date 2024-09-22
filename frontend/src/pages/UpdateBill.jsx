@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, TextField, MenuItem, Select, InputLabel, FormControl, Grid, CircularProgress, Backdrop, Paper } from '@mui/material';
+import { Container, Typography, Button, TextField, MenuItem, Select, InputLabel, FormControl, Grid, CircularProgress, Backdrop, Paper } from '@mui/material';
 import { useFormik } from 'formik';
 import CustomSnackbar from '../components/CustomSnackbar';
 import * as Yup from 'yup';
@@ -94,6 +94,8 @@ export default function UpdateBill() {
     validationSchema: validationSchema,
     onSubmit: async (values, { resetForm }) => {
       setLoading(true);
+      const authData = JSON.parse(localStorage.getItem('authData'));
+      const userId = authData ? authData.user: '';
       try {
         const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills/${billId}`, {
           method: 'PUT',
@@ -101,7 +103,7 @@ export default function UpdateBill() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getAuthToken()}`
           },
-          body: JSON.stringify(values)
+          body: JSON.stringify({ ...values, userId })
         });
         if (!response.ok) {
           throw new Error('Failed to update bill');
@@ -184,10 +186,19 @@ export default function UpdateBill() {
             <Grid item xs={12}>
               <Button
                 variant="contained"
-                color="primary"
-                type="submit"
+                onClick={formik.handleSubmit}
                 fullWidth
-                sx={{ marginTop: 2 }}
+                sx={{
+                  marginTop: 2,
+                  borderRadius: '30px',
+                  backgroundColor: '#333',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#444',
+                  },
+                }}
               >
                 Update Bill
               </Button>
@@ -202,5 +213,5 @@ export default function UpdateBill() {
         severity={snackbar.severity}
       />
     </Container>
-  );
+  );  
 }

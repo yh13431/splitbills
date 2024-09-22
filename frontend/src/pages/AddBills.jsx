@@ -172,9 +172,18 @@ export default function AddBills() {
             <Grid item xs={12}>
               <Button
                 variant="contained"
-                color="primary"
                 type="submit"
                 fullWidth
+                sx={{
+                  borderRadius: '30px',
+                  backgroundColor: '#333',
+                  color: '#fff',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s',
+                  '&:hover': {
+                    backgroundColor: '#444',
+                  },
+                }}
               >
                 Add
               </Button>
@@ -189,5 +198,5 @@ export default function AddBills() {
         severity={snackbar.severity} 
       />
     </Container>
-  );
+  );  
 }

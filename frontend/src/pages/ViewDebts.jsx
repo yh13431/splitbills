@@ -13,7 +13,7 @@ export default function ViewDebts() {
 
   const getUserId = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
-    return authData ? authData.user : null;
+    return authData ? authData.user: null;
   };
 
   const fetchUserGroups = async () => {
@@ -97,23 +97,6 @@ export default function ViewDebts() {
     }
   };
 
-  const handleDeleteBill = async (groupId, billId) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/groups/${groupId}/bills/${billId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete bill');
-      }
-      calculateDebts();
-    } catch (error) {
-      console.error('Error deleting bill:', error.message);
-    }
-  };
-
   const handleGoToGroup = (groupId) => {
     window.location.href = `/view-group/${groupId}`;
   };
@@ -147,7 +130,7 @@ export default function ViewDebts() {
       }
 
       if (Object.keys(owedToMe).length > 0) {
-        owedToMeByGroup[groupId] = { bills, owedToMe };
+        owedToMeByGroup[groupId] = { bills: bills.filter(bill => bill.recipientUserId === getUserId()), owedToMe };
       }
 
       namesByGroup[groupId] = groupName;
@@ -166,7 +149,7 @@ export default function ViewDebts() {
     <Container>
       <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 3 }}>
         <i className="fas fa-money-bill-wave" style={{ marginRight: 8 }} />
-        Outstanding Bills
+        What I Owe
       </Typography>
 
       <Grid container spacing={4}>
@@ -208,20 +191,21 @@ export default function ViewDebts() {
                           <Box>
                             <Button
                               variant="contained"
-                              color="primary"
-                              sx={{ marginRight: 1 }}
                               onClick={() => handleGoToGroup(groupId)}
+                              sx={{
+                                marginRight: 1,
+                                borderRadius: '30px',
+                                backgroundColor: '#333',
+                                color: '#fff',
+                                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                                transition: 'all 0.3s',
+                                '&:hover': {
+                                  backgroundColor: '#444',
+                                },
+                              }}
                             >
                               Go to Group
                               <i className="fas fa-arrow-right" style={{ marginLeft: 8 }} />
-                            </Button>
-                            <Button
-                              variant="contained"
-                              color="error"
-                              onClick={() => handleDeleteBill(groupId, bill.id)}
-                            >
-                              Delete Bill
-                              <i className="fas fa-trash-alt" style={{ marginLeft: 8 }} />
                             </Button>
                           </Box>
                         </ListItem>
@@ -269,15 +253,24 @@ export default function ViewDebts() {
                             </Typography>
                             <Typography variant="body1">
                               <i className="fas fa-user" style={{ marginRight: 8 }} />
-                              {bill.userId}
+                              {bill.recipientUserName} {/* Display the user name here */}
                             </Typography>
                           </Stack>
                           <Box>
                             <Button
                               variant="contained"
-                              color="primary"
-                              sx={{ marginRight: 1 }}
                               onClick={() => handleGoToGroup(groupId)}
+                              sx={{
+                                marginRight: 1,
+                                borderRadius: '30px',
+                                backgroundColor: '#333',
+                                color: '#fff',
+                                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                                transition: 'all 0.3s',
+                                '&:hover': {
+                                  backgroundColor: '#444',
+                                },
+                              }}
                             >
                               Go to Group
                               <i className="fas fa-arrow-right" style={{ marginLeft: 8 }} />
@@ -294,5 +287,5 @@ export default function ViewDebts() {
         </Grid>
       </Grid>
     </Container>
-  );
+  );  
 }

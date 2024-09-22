@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 export default function CreateGroup() {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileName, setFileName] = useState(''); // Add state for file name
+  const [fileName, setFileName] = useState('');
   const [navigateAfterLoading, setNavigateAfterLoading] = useState('');
   const navigate = useNavigate();
 
@@ -108,11 +108,24 @@ export default function CreateGroup() {
             fullWidth
             margin="normal"
           />
+          
           <Button
             variant="contained"
             component="label"
             fullWidth
-            sx={{ mt: 2, mb: 2 }}
+            sx={{
+              mt: 2,
+              mb: 2,
+              borderRadius: '30px',
+              backgroundColor: '#333',
+              color: '#fff',
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.3s',
+              '&:hover': {
+                backgroundColor: '#444',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              },
+            }}
           >
             Upload Group Image
             <input
@@ -121,23 +134,28 @@ export default function CreateGroup() {
               onChange={handleFileChange}
             />
           </Button>
+          
           {fileName && (
             <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
               Selected file: {fileName}
             </Typography>
           )}
+  
           <Button
             variant="contained"
-            color="primary"
             type="submit"
             fullWidth
             sx={{
               mt: 2,
-              backgroundColor: formik.isValid && formik.dirty ? 'primary.main' : 'grey.400',
+              borderRadius: '30px',
+              backgroundColor: formik.isValid && formik.dirty ? '#333' : 'grey.400',
+              color: '#fff',
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+              transition: 'all 0.3s',
               '&:hover': {
-                backgroundColor: formik.isValid && formik.dirty ? 'primary.dark' : 'grey.500',
+                backgroundColor: formik.isValid && formik.dirty ? '#444' : 'grey.500',
               },
-              cursor: formik.isValid && formik.dirty ? 'pointer' : 'not-allowed'
+              cursor: formik.isValid && formik.dirty ? 'pointer' : 'not-allowed',
             }}
             disabled={!formik.isValid || !formik.dirty}
           >
@@ -147,5 +165,5 @@ export default function CreateGroup() {
       </Box>
       {loading && <LoadingScreen />}
     </Container>
-  );
+  );  
 }

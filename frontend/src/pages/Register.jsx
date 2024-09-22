@@ -44,8 +44,25 @@ const Register = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 3, p: 3, width: '100%', maxWidth: 400 }}>
+        <Container
+            maxWidth="sm"
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                backgroundColor: '#f0f2f5',
+            }}
+        >
+            <Card
+                sx={{
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    p: 3,
+                    width: '100%',
+                    maxWidth: 400,
+                }}
+            >
                 <CardContent>
                     <Box mb={3}>
                         <Typography variant="h4" component="h1" align="center" gutterBottom>
@@ -65,6 +82,14 @@ const Register = () => {
                                 variant="outlined"
                                 size="small"
                                 sx={{ borderRadius: 1 }}
+                                InputProps={{
+                                    sx: {
+                                        '&:focus': {
+                                            borderColor: 'black',
+                                            boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.2)',
+                                        },
+                                    },
+                                }}
                             />
                         </Box>
                         <Box mb={2}>
@@ -79,6 +104,14 @@ const Register = () => {
                                 variant="outlined"
                                 size="small"
                                 sx={{ borderRadius: 1 }}
+                                InputProps={{
+                                    sx: {
+                                        '&:focus': {
+                                            borderColor: 'black',
+                                            boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.2)',
+                                        },
+                                    },
+                                }}
                             />
                         </Box>
                         <Box mb={2}>
@@ -93,27 +126,40 @@ const Register = () => {
                                 variant="outlined"
                                 size="small"
                                 sx={{ borderRadius: 1 }}
+                                InputProps={{
+                                    sx: {
+                                        '&:focus': {
+                                            borderColor: 'black',
+                                            boxShadow: '0 0 0 2px rgba(0, 0, 0, 0.2)',
+                                        },
+                                    },
+                                }}
                             />
                         </Box>
                         <Button
                             fullWidth
                             type="submit"
-                            variant="contained"
-                            color="primary"
                             disabled={formik.isSubmitting}
                             sx={{
-                                borderRadius: 1,
-                                boxShadow: 2,
+                                borderRadius: '30px',
+                                backgroundColor: '#333',
+                                color: '#fff',
+                                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                                transition: 'all 0.3s',
                                 '&:hover': {
-                                    boxShadow: 4
-                                }
+                                    backgroundColor: '#444',
+                                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                                },
                             }}
                         >
                             Register
                         </Button>
                         <Box mt={2} textAlign="center">
                             <Typography variant="body2">
-                                Have an account? <Link to="/login" style={{ color: '#1976d2' }}>Log In</Link>
+                                Have an account?{' '}
+                                <Link to="/login" style={{ color: '#1976d2' }}>
+                                    Log In
+                                </Link>
                             </Typography>
                         </Box>
                     </form>
@@ -126,7 +172,7 @@ const Register = () => {
                 severity={snackbar.severity}
             />
         </Container>
-    );
+    );      
 };
 
 export default Register;

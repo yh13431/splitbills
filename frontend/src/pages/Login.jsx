@@ -88,13 +88,16 @@ const Login = () => {
                             fullWidth
                             type="submit"
                             variant="contained"
-                            color="primary"
                             disabled={formik.isSubmitting}
                             sx={{
-                                borderRadius: 1,
-                                boxShadow: 2,
+                                borderRadius: '30px',
+                                backgroundColor: '#333',
+                                color: '#fff',
+                                boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+                                transition: 'all 0.3s',
                                 '&:hover': {
-                                    boxShadow: 4
+                                    backgroundColor: '#444',
+                                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
                                 }
                             }}
                         >
@@ -116,6 +119,8 @@ const Login = () => {
             />
         </Container>
     );
+    
+    
 };
 
 export default Login;

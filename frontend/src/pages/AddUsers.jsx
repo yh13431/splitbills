@@ -13,6 +13,7 @@ export default function AddUsers() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [userIds, setUserIds] = useState([]);
 
   const getAuthToken = () => {
     const authData = JSON.parse(localStorage.getItem('authData'));
@@ -59,6 +60,7 @@ export default function AddUsers() {
       }
       const data = await response.json();
       setGroupName(data.name);
+      setUserIds(data.users)
     } catch (error) {
       setError('Error fetching group details: ' + error.message);
     } finally {
@@ -67,9 +69,21 @@ export default function AddUsers() {
   };
 
   useEffect(() => {
-    fetchUsers();
-    fetchGroupDetails();
+    const fetchData = async () => {
+      await fetchUsers();
+      await fetchGroupDetails();
+    };
+    fetchData();
   }, [id]);
+
+  useEffect(() => {
+    if (allUsers.length > 0 && userIds.length > 0) {
+      const userIdsInGroup = allUsers
+        .filter(user => userIds.includes(user.id))
+        .map(user => user.id);
+      setSelectedUsers(userIdsInGroup);
+    }
+  }, [allUsers, userIds]);
 
   const handleAddUser = async () => {
     const currentUserId = getCurrentUserId();
@@ -80,7 +94,6 @@ export default function AddUsers() {
 
     setLoading(true);
     try {
-      console.log('Selected Users:', selectedUsers)
       for (const userId of selectedUsers) {
         const response = await fetch(`http://localhost:8080/api/groups/${id}/users/${userId}`, {
           method: 'POST',
@@ -149,14 +162,17 @@ export default function AddUsers() {
         </FormControl>
         <Button
           variant="contained"
-          color="primary"
           onClick={handleAddUser}
           fullWidth
           sx={{
             mt: 2,
-            backgroundColor: selectedUsers.length > 0 ? 'primary.main' : 'grey.400',
+            borderRadius: '30px',
+            backgroundColor: selectedUsers.length > 0 ? '#333' : 'grey.400',
+            color: '#fff',
+            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s',
             '&:hover': {
-              backgroundColor: selectedUsers.length > 0 ? 'primary.dark' : 'grey.500',
+              backgroundColor: selectedUsers.length > 0 ? '#444' : 'grey.500',
             },
             cursor: selectedUsers.length > 0 ? 'pointer' : 'not-allowed'
           }}
@@ -179,5 +195,5 @@ export default function AddUsers() {
         severity="success"
       />
     </Container>
-  );
+  );  
 }
